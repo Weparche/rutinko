@@ -16,6 +16,10 @@ _Avoid_: user routine, editable preset, factory routine
 A reusable task template owned by the user that can appear on the Today screen according to its repeat rule.
 _Avoid_: habit, checklist item, calendar event
 
+**Duplicate Routine**:
+Two or more user routines with the same title or template origin, allowed when the user wants the same activity at different times or frequencies.
+_Avoid_: duplicate warning, blocked copy, deduplication
+
 **Task**:
 A concrete routine instance shown to the user as something they can resolve on a given day.
 _Avoid_: event, reminder, notification
