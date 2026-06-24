@@ -1,0 +1,28 @@
+.confirmModal {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.confirmModal .animatedMomentHost {
+  order: -1;
+  align-self: center;
+}
+
+.allDoneCard .animatedMomentHost {
+  align-self: center;
+}
+
+.heroAnimation {
+  mix-blend-mode: screen;
+}
+
+.focusDogAnimation,
+.taskDogAnimation {
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.taskCard:hover .taskDogAnimation,
+.focusCard:hover .focusDogAnimation {
+  transform: translateY(-2px) scale(1.02);
+}
