@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192" role="img" aria-label="Rutinko icon">
+  <rect width="192" height="192" rx="48" fill="#2563eb"/>
+  <circle cx="96" cy="96" r="56" fill="#ffffff" opacity="0.96"/>
+  <path d="M70 99.5 88.5 118 124 76" fill="none" stroke="#2563eb" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M96 22v20M96 150v20M22 96h20M150 96h20" stroke="#93c5fd" stroke-width="8" stroke-linecap="round"/>
+</svg>
