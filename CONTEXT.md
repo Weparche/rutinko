@@ -85,8 +85,8 @@ The time window during which Rutinko should not send reminders.
 _Avoid_: do not disturb mode
 
 **Mini Exercise**:
-A lightweight physical activity routine such as sit-ups, stretching or walking.
-_Avoid_: workout plan, training program
+A normal routine in the Tjelovježba category for lightweight physical activity such as sit-ups, stretching or walking.
+_Avoid_: exercise module, workout plan, sets, reps, training program
 
 **Premium Icon Picker**:
 The categorized icon selector used when creating or editing a routine.
