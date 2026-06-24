@@ -49,8 +49,8 @@ The action that delays the next reminder for a task until a later time.
 _Avoid_: postpone, delay
 
 **Skip**:
-The action that resolves a task for today without marking it as completed.
-_Avoid_: delete, cancel, ignore
+The always-available action that resolves a task for today without marking it as completed.
+_Avoid_: delete, cancel, ignore, strict mode, forced completion
 
 **Paused Routine**:
 A saved routine that is turned off until the user turns it on again.
