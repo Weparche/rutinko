@@ -1,0 +1,104 @@
+.iconPicker.enhancedHidden {
+  display: none !important;
+}
+
+.premiumIconPickerHost {
+  width: 100%;
+}
+
+.premiumIconPicker {
+  display: grid;
+  gap: 14px;
+  padding: 2px 0;
+}
+
+.iconGroup {
+  display: grid;
+  gap: 8px;
+}
+
+.iconGroupTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  padding: 0 3px;
+}
+
+.premiumIconGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.premiumIconButton {
+  min-height: 82px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  gap: 7px;
+  padding: 10px 6px;
+  background: #f8fbff;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  box-shadow: inset 0 0 0 1px rgba(220,233,255,.45);
+}
+
+.premiumIconButton small {
+  max-width: 100%;
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.05;
+  font-weight: 900;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.premiumIconSymbol {
+  width: 42px;
+  height: 42px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: #eef6ff;
+  color: var(--blue);
+  box-shadow: inset 0 0 0 1px #dce9ff;
+}
+
+.premiumIconButton.selected {
+  background: var(--navy);
+  border-color: rgba(7,24,47,.82);
+  box-shadow: 0 14px 26px rgba(7,24,47,.18);
+  transform: translateY(-1px);
+}
+
+.premiumIconButton.selected .premiumIconSymbol {
+  background: var(--lime);
+  color: var(--ink);
+  box-shadow: none;
+}
+
+.premiumIconButton.selected small {
+  color: #fff;
+}
+
+.emojiFallback {
+  font-size: 23px;
+  line-height: 1;
+}
+
+@media (max-width: 430px) {
+  .premiumIconGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .premiumIconButton {
+    min-height: 74px;
+  }
+}
