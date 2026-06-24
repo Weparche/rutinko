@@ -8,6 +8,10 @@ Rutinko is a Croatian mobile-first daily autopilot for routines, simple obligati
 The app itself: a simple daily autopilot that helps the user remember and resolve important routine items.
 _Avoid_: todo app, calendar, productivity suite
 
+**Croatian-only MVP**:
+The MVP language boundary where all product copy, routine labels and UI states are written only in Croatian.
+_Avoid_: i18n system, language switcher, translation files
+
 **Light Theme MVP**:
 The single bright, clean and premium visual direction for the MVP without a manual dark mode toggle.
 _Avoid_: dark mode setting, theme switcher, multi-theme maintenance
