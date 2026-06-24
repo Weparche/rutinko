@@ -36,6 +36,10 @@ _Avoid_: postpone, delay
 The action that resolves a task for today without marking it as completed.
 _Avoid_: delete, cancel, ignore
 
+**Paused Routine**:
+A saved routine that is turned off until the user turns it on again.
+_Avoid_: skipped task, removed routine
+
 **New Day**:
 A user-triggered reset of today's statuses, skipped tasks, snoozes and notification history while keeping routines intact.
 _Avoid_: reset app, clear all, delete routines
