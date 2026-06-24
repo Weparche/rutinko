@@ -1,0 +1,23 @@
+{
+  "detector": {
+    "designSystem": {
+      "enabled": true
+    },
+    "ignoreFiles": [
+      "dist/**",
+      "node_modules/**",
+      "public/brand/**"
+    ],
+    "ignoreValues": {
+      "overused-font": [
+        {
+          "value": "Inter",
+          "reason": "Rutinko currently uses Inter as a temporary app font until a stronger brand typeface is selected. Typography hierarchy and spacing are governed by DESIGN.md."
+        }
+      ]
+    }
+  },
+  "hook": {
+    "enabled": true
+  }
+}
