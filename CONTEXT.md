@@ -20,6 +20,10 @@ _Avoid_: habit, checklist item, calendar event
 Two or more user routines with the same title or template origin, allowed when the user wants the same activity at different times or frequencies.
 _Avoid_: duplicate warning, blocked copy, deduplication
 
+**Fixed Category**:
+A built-in, non-editable category used for light grouping and mini exercise scoring.
+_Avoid_: custom category, category manager, tag system
+
 **Task**:
 A concrete routine instance shown to the user as something they can resolve on a given day.
 _Avoid_: event, reminder, notification
