@@ -10,6 +10,10 @@ export function createTask(template) {
     time: template.time,
     repeat: template.repeat,
     category: template.category,
+    scheduleType: template.scheduleType,
+    startTime: template.startTime,
+    endTime: template.endTime,
+    intervalMinutes: template.intervalMinutes,
     createdAt: new Date().toISOString(),
     active: true
   };
