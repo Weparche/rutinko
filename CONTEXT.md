@@ -40,6 +40,10 @@ _Avoid_: delete, cancel, ignore
 A saved routine that is turned off until the user turns it on again.
 _Avoid_: skipped task, removed routine
 
+**One-time Routine**:
+A routine that appears on Today only on its creation day, then remains available in My Routines for reference or editing.
+_Avoid_: auto-deleted task, permanent routine
+
 **New Day**:
 A user-triggered reset of today's statuses, skipped tasks, snoozes and notification history while keeping routines intact.
 _Avoid_: reset app, clear all, delete routines
