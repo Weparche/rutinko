@@ -1,9 +1,9 @@
-const CACHE_NAME = 'rutinko-v2';
+const CACHE_NAME = 'rutinko-v3';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
-  './app-v2.js',
+  './app-v3.js',
   './manifest.webmanifest',
   './icons/icon-192.svg',
   './icons/icon-512.svg'
