@@ -11,6 +11,7 @@ Aplikacija služi kao dnevni autopilot za stvari koje ne želiš držati u glavi
 - popiti tablete
 - napraviti 20 trbušnjaka ujutro
 - napraviti 20 trbušnjaka navečer
+- prošetati psa
 - otuširati se
 - prijaviti porez
 - odvesti auto na servis
@@ -23,10 +24,11 @@ Aplikacija služi kao dnevni autopilot za stvari koje ne želiš držati u glavi
 - mobile-first premium UI
 - današnji zadaci grupirani u Jutro, Dan, Večer i Jednokratno
 - gotove rutine / predlošci
-- dodavanje vlastitih zadataka
-- odabir ikona, uključujući srce
+- dodavanje i uređivanje vlastitih zadataka
+- premium kategorizirani icon picker
+- lucide-react ikone i lokalne Lottie animacije za ključne trenutke
 - ponavljanje: jednom, svaki dan, radnim danom, tjedno, mjesečno, godišnje
-- gumbi: Završeno, Odgodi, Podsjeti za 5 min
+- gumbi: Završeno, Odgodi, Preskoči
 - lokalno spremanje u browseru
 - PWA manifest i service worker
 - browser notifikacije
@@ -85,14 +87,29 @@ Nakon toga u AI coding alatu koristi:
 /impeccable layout
 ```
 
+## Grill with docs skills
+
+Projekt ima lokalno dodane project skills za stroži prolaz kroz proizvodni model i odluke:
+
+- `.claude/skills/grill-with-docs/SKILL.md`
+- `.claude/skills/grilling/SKILL.md`
+- `.claude/skills/domain-modeling/SKILL.md`
+
+Kontekst domene nalazi se u `CONTEXT.md`, a arhitekturne odluke u `docs/adr/`.
+
 ## Glavne datoteke
 
 - `index.html` – Vite ulazna stranica
 - `package.json` – npm skripte i React/Vite dependencyji
 - `src/main.jsx` – glavna React aplikacija
-- `src/data.js` – rutine, ikone i opcije
+- `src/data.js` – rutine i opcije
+- `src/IconPicker.jsx` – kategorizirani premium icon picker
+- `src/AnimatedMoment.jsx` – Lottie animacijski wrapper
 - `src/utils.js` – datumi, ponavljanja i helper funkcije
 - `src/styles.css` – premium mobile UI
+- `src/impeccable-upgrades.css` – dodatni polish stilovi
+- `src/premium-icons.css` – stilovi za premium icon picker
+- `src/lottie-layer.css` – stilovi za Lottie trenutke
 - `public/manifest.webmanifest` – PWA konfiguracija
 - `public/sw.js` – service worker
 - `public/icons/` – PWA ikone
