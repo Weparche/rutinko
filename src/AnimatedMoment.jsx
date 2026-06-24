@@ -1,3 +1,4 @@
+import React from 'react';
 import Lottie from 'lottie-react';
 import dailyScore from './animations/daily-score.json';
 import dogWalk from './animations/dog-walk.json';
