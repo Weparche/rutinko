@@ -56,6 +56,10 @@ _Avoid_: streak, habit analytics, history
 The only MVP lookback metric, limited to the current week and mini exercise routines.
 _Avoid_: full history, habit tracker, performance analytics
 
+**Local-only MVP**:
+The MVP product boundary where routines and statuses stay on the user's device without accounts, cloud sync or backend storage.
+_Avoid_: login, user account, cloud sync, backup system
+
 **Reminder**:
 The in-app reminder loop that keeps nudging unresolved tasks when browser notification permission exists and reminders are enabled.
 _Avoid_: alarm, push system
