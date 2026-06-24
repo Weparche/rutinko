@@ -101,8 +101,8 @@ The only MVP lookback metric, limited to the current week and mini exercise rout
 _Avoid_: full history, habit tracker, performance analytics
 
 **Local-only MVP**:
-The MVP product boundary where routines and statuses stay on one user's device without accounts, cross-device sync, cloud sync or backend storage.
-_Avoid_: login, login preparation, OAuth placeholder, user account, cross-device sync, cloud sync, backend sync, backup system
+The MVP product boundary where routines and statuses stay on one user's device without accounts, cross-device sync, cloud sync, export, backup or backend storage.
+_Avoid_: login, login preparation, OAuth placeholder, user account, cross-device sync, cloud sync, backend sync, data export, backup flow, backup system
 
 **Reminder**:
 A persistent but non-aggressive browser/PWA notification loop for unresolved tasks.
