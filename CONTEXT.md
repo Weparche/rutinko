@@ -16,6 +16,10 @@ _Avoid_: tutorial, multi-step onboarding, setup wizard
 The first-use state where Today is empty until the user explicitly adds routines from suggestions or creates their own.
 _Avoid_: preloaded routine set, automatic routine creation, fake progress
 
+**Light Delight**:
+Small positive UI feedback such as completion animations and friendly daily progress, without turning Rutinko into a game.
+_Avoid_: badges, levels, rewards, gamification economy
+
 **Routine Template**:
 A built-in catalog item that can be copied into My Routines but is not itself editable by the user.
 _Avoid_: user routine, editable preset, factory routine
