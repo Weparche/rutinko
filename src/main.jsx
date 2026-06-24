@@ -2,9 +2,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 import { CATEGORY_OPTIONS, DEFAULT_SETTINGS, ICONS, REPEAT_OPTIONS, ROUTINES, categoryLabel, repeatLabel } from './data.js';
-import { createTask, currentWeekDates, dateKey, dayPart, dueTime, formatTime, isQuietTime, occurrenceId, occursOn, taskStatus } from './utils.js';
+import { createTask, currentWeekDates, dateKey, dayPart, dueTime, isQuietTime, occurrenceId, occursOn, taskStatus } from './utils.js';
 
-const STORAGE_KEY = 'rutinko-react-v1';
+const STORAGE_KEY = 'rutinko-react-remaster-v1';
+const LOGO = '/brand/rutinko-logo.webp';
 
 function loadInitialState() {
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -36,28 +37,33 @@ function App() {
   const [selectedRoutine, setSelectedRoutine] = useState(3);
   const [form, setForm] = useState(() => ({ ...ROUTINES[3] }));
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }, [state]);
-
+  useEffect(() => localStorage.setItem(STORAGE_KEY, JSON.stringify(state)), [state]);
   useEffect(() => {
     if (!toast) return;
     const timer = setTimeout(() => setToast(''), 2400);
     return () => clearTimeout(timer);
   }, [toast]);
-
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        const data = event.data || {};
-        if (!data.occurrenceId) return;
-        const id = data.occurrenceId.split('::')[0];
-        if (data.action === 'done') markDone(id);
-        if (data.action === 'snooze30') snoozeTask(id, state.settings.snoozeMinutes);
-      });
-    }
+    if (!('serviceWorker' in navigator)) return;
+    navigator.serviceWorker.register('/sw.js');
+    const handler = (event) => {
+      const data = event.data || {};
+      if (!data.occurrenceId) return;
+      const id = data.occurrenceId.split('::')[0];
+      if (data.action === 'done') markDone(id);
+      if (data.action === 'snooze30') snoozeTask(id, state.settings.snoozeMinutes);
+    };
+    navigator.serviceWorker.addEventListener('message', handler);
+    return () => navigator.serviceWorker.removeEventListener('message', handler);
   }, [state.settings.snoozeMinutes]);
+
+  const todayTasks = useMemo(() => state.tasks.filter((task) => task.active !== false && occursOn(task, new Date())).sort((a, b) => a.time.localeCompare(b.time)), [state.tasks]);
+  const doneCount = todayTasks.filter((task) => isDone(task)).length;
+  const leftCount = todayTasks.length - doneCount;
+  const progress = todayTasks.length ? Math.round((doneCount / todayTasks.length) * 100) : 0;
+  const openGroups = groupOpenTasks(todayTasks.filter((task) => !isDone(task)));
+  const exerciseToday = getExerciseToday();
+  const exerciseWeek = getExerciseWeek();
 
   useEffect(() => {
     runReminderCheck();
@@ -65,26 +71,8 @@ function App() {
     return () => clearInterval(timer);
   });
 
-  const todayTasks = useMemo(() => {
-    return state.tasks
-      .filter((task) => task.active !== false && occursOn(task, new Date()))
-      .sort((a, b) => a.time.localeCompare(b.time));
-  }, [state.tasks, state.done, state.snoozedUntil]);
-
-  const doneCount = todayTasks.filter((task) => isDone(task)).length;
-  const leftCount = todayTasks.length - doneCount;
-  const exerciseToday = getExerciseToday();
-  const exerciseWeek = getExerciseWeek();
-
   function isDone(task, key = dateKey()) {
     return Boolean(state.done[occurrenceId(task, key)]);
-  }
-
-  function updateState(updater) {
-    setState((previous) => {
-      const next = typeof updater === 'function' ? updater(previous) : updater;
-      return next;
-    });
   }
 
   function showToast(message) {
@@ -92,68 +80,52 @@ function App() {
   }
 
   function markDone(id, key = dateKey()) {
-    updateState((previous) => {
+    setState((previous) => {
       const task = previous.tasks.find((item) => item.id === id);
       if (!task) return previous;
       const occ = occurrenceId(task, key);
-      const nextDone = { ...previous.done, [occ]: Date.now() };
-      const nextSnooze = { ...previous.snoozedUntil };
-      delete nextSnooze[occ];
-      return { ...previous, done: nextDone, snoozedUntil: nextSnooze };
+      const snoozedUntil = { ...previous.snoozedUntil };
+      delete snoozedUntil[occ];
+      return { ...previous, done: { ...previous.done, [occ]: Date.now() }, snoozedUntil };
     });
   }
 
   function undoDone(id, key = dateKey()) {
-    updateState((previous) => {
+    setState((previous) => {
       const task = previous.tasks.find((item) => item.id === id);
       if (!task) return previous;
-      const nextDone = { ...previous.done };
-      delete nextDone[occurrenceId(task, key)];
-      return { ...previous, done: nextDone };
+      const done = { ...previous.done };
+      delete done[occurrenceId(task, key)];
+      return { ...previous, done };
     });
   }
 
   function snoozeTask(id, minutes, key = dateKey()) {
-    updateState((previous) => {
+    setState((previous) => {
       const task = previous.tasks.find((item) => item.id === id);
       if (!task) return previous;
-      return {
-        ...previous,
-        snoozedUntil: {
-          ...previous.snoozedUntil,
-          [occurrenceId(task, key)]: Date.now() + minutes * 60000
-        }
-      };
+      return { ...previous, snoozedUntil: { ...previous.snoozedUntil, [occurrenceId(task, key)]: Date.now() + minutes * 60000 } };
     });
     showToast(`Odgođeno za ${minutes} min.`);
   }
 
   function deleteTask(id) {
-    updateState((previous) => {
+    setState((previous) => {
       const clean = (bucket) => Object.fromEntries(Object.entries(bucket).filter(([key]) => !key.startsWith(id + '::')));
-      return {
-        ...previous,
-        tasks: previous.tasks.filter((task) => task.id !== id),
-        done: clean(previous.done),
-        snoozedUntil: clean(previous.snoozedUntil),
-        lastNotified: clean(previous.lastNotified)
-      };
+      return { ...previous, tasks: previous.tasks.filter((task) => task.id !== id), done: clean(previous.done), snoozedUntil: clean(previous.snoozedUntil), lastNotified: clean(previous.lastNotified) };
     });
     showToast('Zadatak obrisan.');
   }
 
   function saveTask() {
-    if (!form.title.trim()) {
-      showToast('Upiši naziv zadatka.');
-      return;
-    }
-    updateState((previous) => ({ ...previous, tasks: [...previous.tasks, createTask(form)] }));
+    if (!form.title.trim()) return showToast('Upiši naziv zadatka.');
+    setState((previous) => ({ ...previous, tasks: [...previous.tasks, createTask(form)] }));
     setTab('today');
     showToast('Zadatak dodan.');
   }
 
   function addRoutine(routine) {
-    updateState((previous) => ({ ...previous, tasks: [...previous.tasks, createTask(routine)] }));
+    setState((previous) => ({ ...previous, tasks: [...previous.tasks, createTask(routine)] }));
     setTab('today');
     showToast('Rutina dodana.');
   }
@@ -166,10 +138,7 @@ function App() {
   }
 
   async function requestNotifications() {
-    if (!('Notification' in window)) {
-      showToast('Ovaj browser ne podržava notifikacije.');
-      return;
-    }
+    if (!('Notification' in window)) return showToast('Ovaj browser ne podržava notifikacije.');
     const permission = await Notification.requestPermission();
     showToast(permission === 'granted' ? 'Podsjetnici su uključeni.' : 'Podsjetnici nisu odobreni.');
   }
@@ -177,7 +146,6 @@ function App() {
   function runReminderCheck() {
     if (!('Notification' in window) || Notification.permission !== 'granted') return;
     if (isQuietTime(state.settings)) return;
-
     todayTasks.forEach((task) => {
       const occ = occurrenceId(task);
       if (state.done[occ]) return;
@@ -191,24 +159,9 @@ function App() {
   }
 
   async function sendNotification(task, occ) {
-    const options = {
-      body: 'Stisni Završeno ili odgodi podsjetnik.',
-      tag: occ,
-      renotify: true,
-      icon: '/icons/icon-192.svg',
-      badge: '/icons/icon-192.svg',
-      data: { occurrenceId: occ },
-      actions: [
-        { action: 'done', title: 'Završeno' },
-        { action: 'snooze30', title: `Odgodi ${state.settings.snoozeMinutes} min` }
-      ]
-    };
-    if ('serviceWorker' in navigator) {
-      const registration = await navigator.serviceWorker.ready;
-      registration.showNotification(`${task.icon} ${task.title}`, options);
-    } else {
-      new Notification(`${task.icon} ${task.title}`, options);
-    }
+    const options = { body: 'Stisni Završeno ili odgodi podsjetnik.', tag: occ, renotify: true, icon: LOGO, badge: LOGO, data: { occurrenceId: occ }, actions: [{ action: 'done', title: 'Završeno' }, { action: 'snooze30', title: `Odgodi ${state.settings.snoozeMinutes} min` }] };
+    if ('serviceWorker' in navigator) (await navigator.serviceWorker.ready).showNotification(`${task.icon} ${task.title}`, options);
+    else new Notification(`${task.icon} ${task.title}`, options);
   }
 
   function getExerciseToday() {
@@ -218,28 +171,24 @@ function App() {
 
   function getExerciseWeek() {
     const exercises = state.tasks.filter((task) => task.category === 'tjelovježba' && task.active !== false);
-    let total = 0;
-    let done = 0;
-    currentWeekDates().forEach((day) => {
-      exercises.forEach((task) => {
-        if (!occursOn(task, day)) return;
-        total += 1;
-        if (isDone(task, dateKey(day))) done += 1;
-      });
-    });
+    let total = 0, done = 0;
+    currentWeekDates().forEach((day) => exercises.forEach((task) => {
+      if (!occursOn(task, day)) return;
+      total += 1;
+      if (isDone(task, dateKey(day))) done += 1;
+    }));
     return { total, done };
   }
 
   function pickRoutine(index) {
     const routine = ROUTINES[index];
-    if (!routine) return;
     setSelectedRoutine(index);
     setForm({ ...routine });
   }
 
-  function groupedOpenTasks() {
+  function groupOpenTasks(tasks) {
     const groups = { morning: [], day: [], evening: [], once: [] };
-    todayTasks.filter((task) => !isDone(task)).forEach((task) => {
+    tasks.forEach((task) => {
       let group = dayPart(task.time);
       if (task.repeat === 'once' && task.category === 'obaveza') group = 'once';
       groups[group].push(task);
@@ -247,99 +196,59 @@ function App() {
     return groups;
   }
 
-  const groups = groupedOpenTasks();
-
-  return (
-    <div className="app">
-      <Header tab={tab} setTab={setTab} onNotify={requestNotifications} />
-      {tab === 'today' && (
-        <TodayScreen
-          tasks={todayTasks}
-          groups={groups}
-          doneCount={doneCount}
-          leftCount={leftCount}
-          exerciseToday={exerciseToday}
-          exerciseWeek={exerciseWeek}
-          isDone={isDone}
-          onDone={markDone}
-          onUndo={undoDone}
-          onSnooze={snoozeTask}
-          onDelete={deleteTask}
-          settings={state.settings}
-          onNotify={requestNotifications}
-        />
-      )}
-      {tab === 'add' && (
-        <AddScreen
-          form={form}
-          setForm={setForm}
-          selectedRoutine={selectedRoutine}
-          pickRoutine={pickRoutine}
-          saveTask={saveTask}
-        />
-      )}
-      {tab === 'routines' && <RoutinesScreen addRoutine={addRoutine} />}
-      {tab === 'settings' && (
-        <SettingsScreen
-          settings={state.settings}
-          setSettings={(settings) => setState((previous) => ({ ...previous, settings }))}
-          resetApp={resetApp}
-          showToast={showToast}
-        />
-      )}
-      <BottomNav tab={tab} setTab={setTab} />
-      {toast && <div className="toast">{toast}</div>}
-    </div>
-  );
+  return <div className="appShell">
+    <Header tab={tab} setTab={setTab} onNotify={requestNotifications} />
+    {tab === 'today' && <TodayScreen tasks={todayTasks} groups={openGroups} doneCount={doneCount} leftCount={leftCount} progress={progress} exerciseToday={exerciseToday} exerciseWeek={exerciseWeek} isDone={isDone} onDone={markDone} onUndo={undoDone} onSnooze={snoozeTask} onDelete={deleteTask} settings={state.settings} setTab={setTab} onNotify={requestNotifications} />}
+    {tab === 'add' && <AddScreen form={form} setForm={setForm} selectedRoutine={selectedRoutine} pickRoutine={pickRoutine} saveTask={saveTask} />}
+    {tab === 'routines' && <RoutinesScreen addRoutine={addRoutine} />}
+    {tab === 'settings' && <SettingsScreen settings={state.settings} setSettings={(settings) => setState((previous) => ({ ...previous, settings }))} resetApp={resetApp} showToast={showToast} />}
+    <FooterNav tab={tab} setTab={setTab} />
+    {toast && <div className="toast">{toast}</div>}
+  </div>;
 }
 
 function Header({ tab, setTab, onNotify }) {
-  const title = { today: 'Danas', add: 'Dodaj zadatak', routines: 'Rutine', settings: 'Postavke' }[tab];
-  if (tab === 'add') {
-    return <header className="top centered"><button className="ghost" onClick={() => setTab('today')}>←</button><h1>{title}</h1><span /></header>;
-  }
-  return <header className="top"><div><p>Rutinko</p><h1>{title}</h1></div><button className="round" onClick={tab === 'today' ? onNotify : () => setTab('add')}>{tab === 'today' ? '🔔' : '+'}</button></header>;
+  const title = { today: 'Danas', add: 'Novi zadatak', routines: 'Rutine', settings: 'Postavke' }[tab];
+  if (tab === 'add') return <header className="topBar centered"><button className="backButton" onClick={() => setTab('today')}>←</button><h1>{title}</h1><span /></header>;
+  return <header className="topBar"><button className="brandButton" onClick={() => setTab('today')}><img src={LOGO} alt="Rutinko" /><span><b>Rutinko</b><small>Daily autopilot</small></span></button><div className="topActions"><button onClick={tab === 'today' ? onNotify : () => setTab('add')}>{tab === 'today' ? '🔔' : '+'}</button></div></header>;
 }
 
 function TodayScreen(props) {
-  const total = props.tasks.length;
-  const progress = total ? Math.round((props.doneCount / total) * 100) : 0;
   const permission = 'Notification' in window ? Notification.permission : 'unsupported';
   return <>
-    <section className="hero">
-      <div className="heroGlow" />
-      <div className="heroText"><h2>{props.leftCount ? `Još ${props.leftCount} ${props.leftCount === 1 ? 'stvar' : 'stvari'}.` : 'Mirna glava.'}</h2><p>{props.leftCount ? 'Ti to možeš! 💙' : 'Sve bitno za danas je riješeno.'}</p></div>
-      <div className="ring" style={{ '--value': progress }}><strong>{props.doneCount}/{total}</strong><span>završeno</span></div>
-      <div className="heroStats"><Stat label="Mini trening danas" value={`${props.exerciseToday.done}/${props.exerciseToday.total}`} percent={props.exerciseToday.total ? props.exerciseToday.done / props.exerciseToday.total * 100 : 0} /><Stat label="Mini treninzi ovaj tjedan" value={`${props.exerciseWeek.done}/${props.exerciseWeek.total}`} percent={props.exerciseWeek.total ? props.exerciseWeek.done / props.exerciseWeek.total * 100 : 0} /></div>
+    <section className="fitnessHero">
+      <div className="heroContent"><span className="eyebrow">Današnji score</span><h1>{props.leftCount ? `${props.leftCount} stvari do mirne glave` : 'Mirna glava'}</h1><p>{props.leftCount ? 'Riješi osnovno, odradi mini trening i ne drži ništa u glavi.' : 'Sve bitno je zatvoreno za danas.'}</p></div>
+      <div className="scoreRing" style={{ '--score': props.progress }}><strong>{props.progress}</strong><span>%</span></div>
+      <div className="metricGrid"><Metric label="Zadaci" value={`${props.doneCount}/${props.tasks.length}`} /><Metric label="Trening" value={`${props.exerciseToday.done}/${props.exerciseToday.total}`} /><Metric label="Tjedan" value={`${props.exerciseWeek.done}/${props.exerciseWeek.total}`} /></div>
     </section>
-    {permission !== 'granted' && <button className="notifyCard" onClick={props.onNotify}>🔔 Uključi podsjetnike</button>}
-    <TaskSection title="Jutro ☀️" tasks={props.groups.morning} {...props} />
-    <TaskSection title="Dan ☀️" tasks={props.groups.day} {...props} />
-    <TaskSection title="Večer 🌙" tasks={props.groups.evening} {...props} />
-    <TaskSection title="Jednokratno" tasks={props.groups.once} {...props} />
-    <TaskSection title="Gotovo ✅" tasks={props.tasks.filter(props.isDone)} completed {...props} />
+    <section className="ctaDock"><button className="ctaPrimary" onClick={() => props.setTab('add')}>＋ Dodaj rutinu</button><button className="ctaSecondary" onClick={props.onNotify}>{permission === 'granted' ? '🔔 Podsjetnici aktivni' : '🔔 Uključi podsjetnike'}</button></section>
+    <TaskSection title="Jutro" badge="AM" tasks={props.groups.morning} {...props} />
+    <TaskSection title="Dan" badge="DAY" tasks={props.groups.day} {...props} />
+    <TaskSection title="Večer" badge="PM" tasks={props.groups.evening} {...props} />
+    <TaskSection title="Jednokratno" badge="1X" tasks={props.groups.once} {...props} />
+    <TaskSection title="Gotovo" badge="OK" tasks={props.tasks.filter(props.isDone)} completed {...props} />
   </>;
 }
 
-function Stat({ label, value, percent }) {
-  return <div><span>{label}</span><strong>{value}</strong><i style={{ '--bar': `${percent}%` }} /></div>;
+function Metric({ label, value }) {
+  return <div className="metric"><span>{label}</span><strong>{value}</strong></div>;
 }
 
-function TaskSection({ title, tasks, completed, isDone, onDone, onUndo, onSnooze, onDelete, settings }) {
+function TaskSection({ title, badge, tasks, isDone, onDone, onUndo, onSnooze, onDelete, settings }) {
   if (!tasks.length) return null;
-  return <section className="section"><div className="sectionHead"><h2>{title}</h2><span>{tasks.length}</span></div><div className="taskList">{tasks.map((task) => <TaskCard key={task.id} task={task} done={isDone(task)} completed={completed} onDone={onDone} onUndo={onUndo} onSnooze={onSnooze} onDelete={onDelete} settings={settings} />)}</div></section>;
+  return <section className="taskSection"><div className="sectionHeader"><div><span>{badge}</span><h2>{title}</h2></div><small>{tasks.length}</small></div><div className="taskStack">{tasks.map((task) => <TaskCard key={task.id} task={task} done={isDone(task)} onDone={onDone} onUndo={onUndo} onSnooze={onSnooze} onDelete={onDelete} settings={settings} />)}</div></section>;
 }
 
 function TaskCard({ task, done, onDone, onUndo, onSnooze, onDelete, settings }) {
   const status = taskStatus(task, done);
-  return <article className={`task ${status.tone}`}><div className="taskMain"><div className="taskIcon">{task.icon}</div><div><h3>{task.title}</h3><p>{task.time} · {status.label}</p></div></div><div className="taskActions">{done ? <><button className="mini success" onClick={() => onUndo(task.id)}>↩<span>Vrati</span></button><button className="mini danger" onClick={() => onDelete(task.id)}>×<span>Obriši</span></button></> : <><button className="mini success" onClick={() => onDone(task.id)}>✓<span>Završeno</span></button><button className="mini" onClick={() => onSnooze(task.id, settings.snoozeMinutes)}>◷<span>{settings.snoozeMinutes} min</span></button><button className="mini" onClick={() => onSnooze(task.id, 5)}>♢<span>5 min</span></button></>}</div></article>;
+  return <article className={`taskCard ${status.tone}`}><div className="taskMeta"><div className="taskIcon">{task.icon}</div><div><h3>{task.title}</h3><p>{task.time} · {status.label}</p></div></div><div className="quickActions">{done ? <><button className="success" onClick={() => onUndo(task.id)}>↩<small>Vrati</small></button><button className="danger" onClick={() => onDelete(task.id)}>×<small>Briši</small></button></> : <><button className="success" onClick={() => onDone(task.id)}>✓<small>Done</small></button><button onClick={() => onSnooze(task.id, settings.snoozeMinutes)}>◷<small>{settings.snoozeMinutes}m</small></button><button onClick={() => onSnooze(task.id, 5)}>⏱<small>5m</small></button></>}</div></article>;
 }
 
 function AddScreen({ form, setForm, selectedRoutine, pickRoutine, saveTask }) {
   return <>
-    <section className="addHero"><div className="bigIcon">{form.icon}</div><div><span>Novi zadatak</span><strong>{form.title || 'Novi zadatak'}</strong><p>Odaberi rutinu, ikonu i vrijeme.</p></div></section>
-    <section className="quick"><div className="sectionHead"><h2>Brzo iz rutina</h2><span>{ROUTINES.length}</span></div><div className="chips">{ROUTINES.map((routine, index) => <button key={`${routine.title}-${index}`} className={index === selectedRoutine ? 'chip active' : 'chip'} onClick={() => pickRoutine(index)}><b>{routine.icon}</b><span>{routine.title}</span></button>)}</div></section>
-    <section className="panel form"><Field label="Naziv zadatka" icon="✎"><input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></Field><Field label="Ikona" icon={form.icon}><input value={form.icon} readOnly /></Field><div className="iconGrid">{ICONS.map((icon) => <button key={icon} className={icon === form.icon ? 'iconPick active' : 'iconPick'} onClick={() => setForm({ ...form, icon })}>{icon}</button>)}</div><Field label="Vrijeme" icon="◷"><input type="time" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} /></Field><Field label="Ponavljanje" icon="↻"><select value={form.repeat} onChange={(e) => setForm({ ...form, repeat: e.target.value })}>{REPEAT_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><Field label="Kategorija" icon="◇"><select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>{CATEGORY_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><button className="primary" onClick={saveTask}>Spremi zadatak</button></section>
+    <section className="addPreview"><div className="bigRoutineIcon">{form.icon}</div><div><span>Rutinko builder</span><h1>{form.title || 'Novi zadatak'}</h1><p>{form.time} · {repeatLabel[form.repeat]} · {categoryLabel[form.category]}</p></div></section>
+    <section className="routineCarousel"><div className="sectionHeader compact"><div><span>PRESET</span><h2>Brzo iz rutina</h2></div><small>{ROUTINES.length}</small></div><div className="chips">{ROUTINES.map((routine, index) => <button key={`${routine.title}-${index}`} className={index === selectedRoutine ? 'chip active' : 'chip'} onClick={() => pickRoutine(index)}><b>{routine.icon}</b><span>{routine.title}</span></button>)}</div></section>
+    <section className="formPanel"><Field label="Naziv" icon="✎"><input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></Field><div className="iconPicker">{ICONS.map((icon) => <button key={icon} className={icon === form.icon ? 'selected' : ''} onClick={() => setForm({ ...form, icon })}>{icon}</button>)}</div><Field label="Vrijeme" icon="◷"><input type="time" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} /></Field><Field label="Ponavljanje" icon="↻"><select value={form.repeat} onChange={(e) => setForm({ ...form, repeat: e.target.value })}>{REPEAT_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><Field label="Kategorija" icon="◇"><select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>{CATEGORY_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><button className="saveButton" onClick={saveTask}>Spremi zadatak</button></section>
   </>;
 }
 
@@ -348,21 +257,21 @@ function Field({ label, icon, children }) {
 }
 
 function RoutinesScreen({ addRoutine }) {
-  return <><section className="routineHero"><div><span>Gotovi predlošci</span><strong>{ROUTINES.length} rutina</strong><p>Sve osnovno + mini trening + srce.</p></div><b>💙</b></section><section className="routineList">{ROUTINES.map((routine, index) => <article className="routine" key={`${routine.title}-${index}`}><div className="routineIcon">{routine.icon}</div><div><h3>{routine.title}</h3><p>{routine.time} · {repeatLabel[routine.repeat]} · {categoryLabel[routine.category]}</p></div><button onClick={() => addRoutine(routine)}>Dodaj</button></article>)}</section></>;
+  return <><section className="routineHero"><div><span>Programi</span><h1>{ROUTINES.length} rutina</h1><p>Osnovne stvari, trening i obaveze u jednom tapu.</p></div><img src={LOGO} alt="Rutinko" /></section><section className="routineList">{ROUTINES.map((routine, index) => <article className="routineCard" key={`${routine.title}-${index}`}><div className="routineIcon">{routine.icon}</div><div><h3>{routine.title}</h3><p>{routine.time} · {repeatLabel[routine.repeat]}</p></div><button onClick={() => addRoutine(routine)}>Dodaj</button></article>)}</section></>;
 }
 
 function SettingsScreen({ settings, setSettings, resetApp, showToast }) {
   const update = (key, value) => setSettings({ ...settings, [key]: value });
-  return <section className="panel settings"><Setting title="Ponavljaj podsjetnik" text="Kad ništa ne stisneš."><input type="number" min="1" max="60" value={settings.reminderIntervalMinutes} onChange={(e) => update('reminderIntervalMinutes', Number(e.target.value))} /></Setting><Setting title="Odgoda" text="Brzi gumb za odgodu."><input type="number" min="5" max="240" value={settings.snoozeMinutes} onChange={(e) => update('snoozeMinutes', Number(e.target.value))} /></Setting><Setting title="Tišina od" text="Ne gnjavi dok spavaš."><input type="time" value={settings.quietStart} onChange={(e) => update('quietStart', e.target.value)} /></Setting><Setting title="Tišina do" text="Podsjetnici se nastavljaju poslije."><input type="time" value={settings.quietEnd} onChange={(e) => update('quietEnd', e.target.value)} /></Setting><button className="primary" onClick={() => showToast('Postavke spremljene.')}>Spremi postavke</button><button className="dangerBtn" onClick={resetApp}>Vrati početne zadatke</button></section>;
+  return <section className="formPanel"><Setting title="Ponavljaj podsjetnik" text="Kad ništa ne stisneš."><input type="number" min="1" max="60" value={settings.reminderIntervalMinutes} onChange={(e) => update('reminderIntervalMinutes', Number(e.target.value))} /></Setting><Setting title="Odgoda" text="Brzi gumb za odgodu."><input type="number" min="5" max="240" value={settings.snoozeMinutes} onChange={(e) => update('snoozeMinutes', Number(e.target.value))} /></Setting><Setting title="Tišina od" text="Ne gnjavi dok spavaš."><input type="time" value={settings.quietStart} onChange={(e) => update('quietStart', e.target.value)} /></Setting><Setting title="Tišina do" text="Podsjetnici se nastavljaju poslije."><input type="time" value={settings.quietEnd} onChange={(e) => update('quietEnd', e.target.value)} /></Setting><button className="saveButton" onClick={() => showToast('Postavke spremljene.')}>Spremi postavke</button><button className="resetButton" onClick={resetApp}>Vrati početne zadatke</button></section>;
 }
 
 function Setting({ title, text, children }) {
   return <label className="setting"><div><strong>{title}</strong><small>{text}</small></div>{children}</label>;
 }
 
-function BottomNav({ tab, setTab }) {
-  const items = [['today', '▣', 'Danas'], ['add', '+', 'Dodaj'], ['routines', '▤', 'Rutine'], ['settings', '⚙', 'Postavke']];
-  return <nav className="nav">{items.map(([id, icon, label]) => <button key={id} className={tab === id ? 'active' : ''} onClick={() => setTab(id)}><b>{icon}</b><span>{label}</span></button>)}</nav>;
+function FooterNav({ tab, setTab }) {
+  const items = [['today', '⌁', 'Danas'], ['add', '+', 'Dodaj'], ['routines', '◇', 'Rutine'], ['settings', '⚙', 'Postavke']];
+  return <nav className="footerNav">{items.map(([id, icon, label]) => <button key={id} className={tab === id ? 'active' : ''} onClick={() => setTab(id)}><b>{icon}</b><span>{label}</span></button>)}</nav>;
 }
 
 createRoot(document.getElementById('root')).render(<App />);
