@@ -77,8 +77,8 @@ The MVP product boundary where routines and statuses stay on the user's device w
 _Avoid_: login, user account, cloud sync, backup system
 
 **Reminder**:
-The in-app reminder loop that keeps nudging unresolved tasks when browser notification permission exists and reminders are enabled.
-_Avoid_: alarm, push system
+A persistent but non-aggressive browser/PWA notification loop for unresolved tasks.
+_Avoid_: loud alarm, forced vibration, native alarm mode, panic reminder
 
 **Quiet Hours**:
 The time window during which Rutinko should not send reminders.
