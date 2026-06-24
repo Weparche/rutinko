@@ -40,16 +40,20 @@
 }
 
 .premiumIconButton {
-  min-height: 82px;
+  min-height: 84px;
   border-radius: 22px;
   display: grid;
   place-items: center;
   gap: 7px;
   padding: 10px 6px;
-  background: #f8fbff;
+  background:
+    radial-gradient(circle at 25% 12%, rgba(255,255,255,.92), transparent 38%),
+    linear-gradient(145deg, #fbfdff 0%, #eef6ff 100%);
   color: var(--ink);
-  border: 1px solid var(--line);
-  box-shadow: inset 0 0 0 1px rgba(220,233,255,.45);
+  border: 1px solid rgba(18,104,255,.10);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.74),
+    0 10px 24px rgba(18,104,255,.08);
 }
 
 .premiumIconButton small {
@@ -65,31 +69,125 @@
 }
 
 .premiumIconSymbol {
-  width: 42px;
-  height: 42px;
-  border-radius: 16px;
+  position: relative;
+  width: 46px;
+  height: 46px;
+  border-radius: 17px;
   display: grid;
   place-items: center;
-  background: #eef6ff;
-  color: var(--blue);
-  box-shadow: inset 0 0 0 1px #dce9ff;
+  background:
+    radial-gradient(circle at 26% 18%, rgba(255,255,255,.88), transparent 42%),
+    linear-gradient(145deg, #fff7df 0%, #eaf7ff 48%, #e8fff4 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.88),
+    0 10px 20px rgba(7,24,47,.10);
+}
+
+.premiumIconEmoji,
+.emojiIconVisual {
+  display: inline-grid;
+  place-items: center;
+  line-height: 1;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", system-ui, sans-serif;
+  filter: drop-shadow(0 3px 5px rgba(7,24,47,.12));
+}
+
+.premiumIconEmoji {
+  font-size: 25px;
+}
+
+.emojiIconVisual {
+  font-size: 1.12em;
+  transform: translateY(1px);
+}
+
+.premiumIconAccent {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  width: 20px;
+  height: 20px;
+  padding: 3px;
+  border-radius: 9px;
+  color: #fff;
+  background: linear-gradient(145deg, var(--blue), var(--cyan));
+  box-shadow: 0 6px 12px rgba(18,104,255,.24);
 }
 
 .premiumIconButton.selected {
-  background: var(--navy);
+  background:
+    radial-gradient(circle at 18% 12%, rgba(183,255,56,.42), transparent 46%),
+    linear-gradient(145deg, #07182f 0%, #0d2d63 100%);
   border-color: rgba(7,24,47,.82);
   box-shadow: 0 14px 26px rgba(7,24,47,.18);
   transform: translateY(-1px);
 }
 
 .premiumIconButton.selected .premiumIconSymbol {
+  background: #fff;
+  box-shadow: 0 12px 22px rgba(7,24,47,.18);
+}
+
+.premiumIconButton.selected .premiumIconAccent {
   background: var(--lime);
   color: var(--ink);
-  box-shadow: none;
 }
 
 .premiumIconButton.selected small {
   color: #fff;
+}
+
+.iconDropdown {
+  border-radius: 26px;
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: var(--soft);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.iconDropdownHeader {
+  min-height: 70px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 42px;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 14px;
+}
+
+.iconDropdownHeader strong,
+.iconDropdownHeader small {
+  display: block;
+}
+
+.iconDropdownHeader strong {
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.1;
+  letter-spacing: -.035em;
+}
+
+.iconDropdownHeader small {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.iconDropdownChevron {
+  justify-self: end;
+  color: var(--blue);
+  transition: transform .18s ease;
+}
+
+.iconDropdown.expanded .iconDropdownChevron {
+  transform: rotate(180deg);
+}
+
+.iconDropdownContent {
+  display: grid;
+  gap: 14px;
+  padding: 0 14px 14px;
 }
 
 .emojiFallback {
