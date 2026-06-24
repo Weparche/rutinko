@@ -6,11 +6,18 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "design:init": "impeccable init",
+    "design:audit": "impeccable detect src public index.html",
+    "design:audit:json": "impeccable detect --json src public index.html",
+    "design:update": "impeccable update"
   },
   "dependencies": {
     "vite": "^7.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "impeccable": "latest"
   }
 }
