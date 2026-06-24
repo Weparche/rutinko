@@ -102,7 +102,7 @@ _Avoid_: full history, habit tracker, performance analytics
 
 **Local-only MVP**:
 The MVP product boundary where routines and statuses stay on the user's device without accounts, cloud sync or backend storage.
-_Avoid_: login, user account, cloud sync, backup system
+_Avoid_: login, login preparation, OAuth placeholder, user account, cloud sync, backup system
 
 **Reminder**:
 A persistent but non-aggressive browser/PWA notification loop for unresolved tasks.
