@@ -149,10 +149,29 @@
 .iconDropdownHeader {
   min-height: 70px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 42px;
+  grid-template-columns: auto minmax(0, 1fr) 42px;
   align-items: center;
   gap: 12px;
   padding: 13px 14px;
+}
+
+.iconDropdownPreview {
+  display: flex;
+  align-items: center;
+  min-width: 82px;
+}
+
+.iconDropdownPreview span {
+  width: 34px;
+  height: 34px;
+  margin-right: -8px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, #fff7df, #eaf7ff);
+  border: 1px solid rgba(255,255,255,.85);
+  box-shadow: 0 8px 18px rgba(7,24,47,.10);
+  font-size: 18px;
 }
 
 .iconDropdownHeader strong,
