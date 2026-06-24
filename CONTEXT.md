@@ -48,6 +48,14 @@ _Avoid_: auto-deleted task, permanent routine
 A user-triggered reset of today's statuses, skipped tasks, snoozes and notification history while keeping routines intact. It does not let the user pick or change the current date.
 _Avoid_: calendar day switcher, manual date mode, reset app, clear all, delete routines
 
+**Daily Score**:
+The lightweight progress summary for the current Today screen.
+_Avoid_: streak, habit analytics, history
+
+**Weekly Mini Exercise Score**:
+The only MVP lookback metric, limited to the current week and mini exercise routines.
+_Avoid_: full history, habit tracker, performance analytics
+
 **Reminder**:
 The in-app reminder loop that keeps nudging unresolved tasks when browser notification permission exists and reminders are enabled.
 _Avoid_: alarm, push system
