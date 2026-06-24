@@ -12,6 +12,10 @@ _Avoid_: todo app, calendar, productivity suite
 The first-use experience where the user lands directly on Today with quick routine suggestions instead of a long onboarding flow.
 _Avoid_: tutorial, multi-step onboarding, setup wizard
 
+**Empty Today Start**:
+The first-use state where Today is empty until the user explicitly adds routines from suggestions or creates their own.
+_Avoid_: preloaded routine set, automatic routine creation, fake progress
+
 **Routine Template**:
 A built-in catalog item that can be copied into My Routines but is not itself editable by the user.
 _Avoid_: user routine, editable preset, factory routine
