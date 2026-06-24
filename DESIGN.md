@@ -21,6 +21,7 @@ Use the feel of popular habit and fitness apps:
 - compact task cards
 - clean bottom navigation
 - polished icon picker
+- light Lottie moments only where they add delight
 
 Do not copy any specific app. Use the category conventions, not another product's brand.
 
@@ -79,17 +80,18 @@ Header:
 - app name
 - short subtitle: Daily autopilot
 - notification action
+- install action only when PWA install is available and app is not installed
 
 Hero:
 - dark navy fitness-style card
-- label: Današnji score
+- label: Daily flow / Današnji score
 - progress ring
 - main message such as “4 stvari do mirne glave”
-- stats: Zadaci, Trening, Tjedan
+- stats: Riješeno, Trening, Tjedan
 
 CTA dock:
 - primary: Dodaj rutinu
-- secondary: Uključi podsjetnike / Podsjetnici aktivni
+- secondary: Izradi novi dan
 
 Task sections:
 - Jutro
@@ -103,13 +105,14 @@ Task card:
 - task title
 - time
 - status
-- actions: Done, Snooze, 5m
+- actions: Done, Snooze, Preskoči
+- edit and delete affordances
 
 ## Add task screen
 
 - preview hero with selected icon and task title
 - horizontal routine preset carousel
-- icon picker
+- premium categorized icon picker
 - fields for title, time, repeat, category
 - large primary save CTA
 
@@ -121,6 +124,7 @@ Task card:
 
 ## Settings screen
 
+- reminders enabled toggle
 - reminder interval
 - snooze length
 - quiet hours
@@ -140,6 +144,7 @@ Avoid:
 - long explanatory text on primary screens
 - low contrast text on colored backgrounds
 - overusing emojis as the only visual system
+- mounting UI enhancements outside the main React tree
 
 ## Motion
 
@@ -148,6 +153,7 @@ Use motion sparingly:
 - pressed states
 - subtle card scale on tap
 - smooth progress feel
+- small Lottie moments for score, dog walk, done state and new day confirmation
 
 No bounce or elastic easing.
 
