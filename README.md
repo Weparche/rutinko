@@ -50,6 +50,41 @@ npm install
 npm run dev
 ```
 
+## Impeccable design tooling
+
+Rutinko ima dodan Impeccable kao design/dev alat.
+
+Korisne naredbe:
+
+```bash
+npm run design:audit
+npm run design:audit:json
+npm run design:init
+npm run design:update
+```
+
+Kontekst za Impeccable nalazi se u:
+
+- `PRODUCT.md` – product i UX kontekst
+- `DESIGN.md` – brand i UI/UX smjer
+- `.impeccable/config.json` – detector konfiguracija
+
+Ako koristiš Codex CLI, Claude Code, Cursor ili drugi podržani AI coding alat, možeš dodatno pokrenuti:
+
+```bash
+npx impeccable install
+```
+
+Nakon toga u AI coding alatu koristi:
+
+```text
+/impeccable audit
+/impeccable critique
+/impeccable polish
+/impeccable typeset
+/impeccable layout
+```
+
 ## Glavne datoteke
 
 - `index.html` – Vite ulazna stranica
@@ -61,6 +96,7 @@ npm run dev
 - `public/manifest.webmanifest` – PWA konfiguracija
 - `public/sw.js` – service worker
 - `public/icons/` – PWA ikone
+- `public/brand/rutinko-logo.webp` – Rutinko WebP logo
 
 ## Napomena za notifikacije
 
