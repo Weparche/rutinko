@@ -49,8 +49,8 @@ The action that delays the next reminder for a task until a later time.
 _Avoid_: postpone, delay
 
 **Skip**:
-The always-available action that resolves a task for today without marking it as completed.
-_Avoid_: delete, cancel, ignore, strict mode, forced completion
+The always-available, neutral action that resolves a task for today without marking it as completed or punishing the user.
+_Avoid_: delete, cancel, ignore, strict mode, forced completion, penalty, shame score
 
 **Paused Routine**:
 A saved routine that is turned off until the user turns it on again.
@@ -65,8 +65,8 @@ A user-triggered reset of today's statuses, skipped tasks, snoozes and notificat
 _Avoid_: calendar day switcher, manual date mode, reset app, clear all, delete routines
 
 **Daily Score**:
-The lightweight progress summary for the current Today screen.
-_Avoid_: streak, habit analytics, history
+The lightweight progress summary for the current Today screen. It can distinguish done from skipped, but must not punish skipped tasks with negative points or shame UI.
+_Avoid_: streak, habit analytics, history, penalty score, red warning
 
 **Weekly Mini Exercise Score**:
 The only MVP lookback metric, limited to the current week and mini exercise routines.
