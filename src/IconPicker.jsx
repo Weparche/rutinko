@@ -41,75 +41,75 @@ export const ICON_GROUPS = [
     id: 'osnovno',
     title: 'Osnovno',
     items: [
-      { value: '🪥', label: 'Zubi', Icon: Sparkles },
-      { value: '🚿', label: 'Tuš', Icon: ShowerHead },
-      { value: '🍳', label: 'Doručak', Icon: Utensils },
-      { value: '💧', label: 'Voda', Icon: Droplet },
-      { value: '💊', label: 'Tablete', Icon: Pill },
-      { value: '🚶', label: 'Šetnja', Icon: Footprints }
+      { value: '🪥', label: 'Zubi', defaultTitle: 'Oprati zube', category: 'higijena', Icon: Sparkles },
+      { value: '🚿', label: 'Tuš', defaultTitle: 'Otuširati se', category: 'higijena', Icon: ShowerHead },
+      { value: '🍳', label: 'Doručak', defaultTitle: 'Pojesti doručak', category: 'prehrana', Icon: Utensils },
+      { value: '💧', label: 'Voda', defaultTitle: 'Popiti vode', category: 'zdravlje', scheduleType: 'water-2h', startTime: '08:00', endTime: '22:00', intervalMinutes: 120, Icon: Droplet },
+      { value: '💊', label: 'Tablete', defaultTitle: 'Popiti tablete', category: 'zdravlje', Icon: Pill },
+      { value: '🚶', label: 'Šetnja', defaultTitle: 'Prošetati se', category: 'tjelovježba', Icon: Footprints }
     ]
   },
   {
     id: 'trening',
     title: 'Trening',
     items: [
-      { value: '💪', label: 'Trening', Icon: Dumbbell },
-      { value: '🏋️', label: 'Snaga', Icon: Dumbbell },
-      { value: '🚶', label: 'Šetnja', Icon: Footprints },
-      { value: '❤️', label: 'Puls', Icon: HeartPulse },
-      { value: '🎯', label: 'Cilj', Icon: Target },
-      { value: '🏆', label: 'Score', Icon: Trophy }
+      { value: '💪', label: 'Trening', defaultTitle: '20 trbušnjaka', category: 'tjelovježba', Icon: Dumbbell },
+      { value: '🏋️', label: 'Snaga', defaultTitle: 'Kratki trening snage', category: 'tjelovježba', Icon: Dumbbell },
+      { value: '🚶', label: 'Šetnja', defaultTitle: 'Prošetati se', category: 'tjelovježba', Icon: Footprints },
+      { value: '❤️', label: 'Puls', defaultTitle: 'Lagani cardio', category: 'tjelovježba', Icon: HeartPulse },
+      { value: '🎯', label: 'Cilj', defaultTitle: 'Dnevni cilj', category: 'obaveza', Icon: Target },
+      { value: '🏆', label: 'Score', defaultTitle: 'Provjeriti napredak', category: 'tjelovježba', Icon: Trophy }
     ]
   },
   {
     id: 'obaveze',
     title: 'Obaveze',
     items: [
-      { value: '📄', label: 'Dokument', Icon: FileText },
-      { value: '💶', label: 'Račun', Icon: CreditCard },
-      { value: '🚗', label: 'Auto', Icon: Car },
-      { value: '☎️', label: 'Poziv', Icon: Phone },
-      { value: '🗑️', label: 'Smeće', Icon: Trash2 },
-      { value: '📅', label: 'Termin', Icon: CalendarDays }
+      { value: '📄', label: 'Dokument', defaultTitle: 'Riješiti dokument', category: 'obaveza', Icon: FileText },
+      { value: '💶', label: 'Račun', defaultTitle: 'Platiti račun', category: 'obaveza', Icon: CreditCard },
+      { value: '🚗', label: 'Auto', defaultTitle: 'Provjeriti auto', category: 'obaveza', Icon: Car },
+      { value: '☎️', label: 'Poziv', defaultTitle: 'Nazvati', category: 'obaveza', Icon: Phone },
+      { value: '🗑️', label: 'Smeće', defaultTitle: 'Baciti smeće', category: 'obaveza', Icon: Trash2 },
+      { value: '📅', label: 'Termin', defaultTitle: 'Provjeriti termin', category: 'obaveza', Icon: CalendarDays }
     ]
   },
   {
     id: 'dom',
     title: 'Dom',
     items: [
-      { value: '🏠', label: 'Dom', Icon: Home },
-      { value: '🛒', label: 'Kupnja', Icon: ShoppingCart },
-      { value: '🛏️', label: 'Spavanje', Icon: Bed },
-      { value: '🧴', label: 'Njega', Icon: Sparkles },
-      { value: '📚', label: 'Čitanje', Icon: BookOpen },
-      { value: '💻', label: 'Laptop', Icon: Laptop }
+      { value: '🏠', label: 'Dom', defaultTitle: 'Srediti dom', category: 'obaveza', Icon: Home },
+      { value: '🛒', label: 'Kupnja', defaultTitle: 'Obaviti kupnju', category: 'obaveza', Icon: ShoppingCart },
+      { value: '🛏️', label: 'Spavanje', defaultTitle: 'Spremiti se za spavanje', category: 'higijena', Icon: Bed },
+      { value: '🧴', label: 'Njega', defaultTitle: 'Njega kože', category: 'higijena', Icon: Sparkles },
+      { value: '📚', label: 'Čitanje', defaultTitle: 'Čitati 10 minuta', category: 'obaveza', Icon: BookOpen },
+      { value: '💻', label: 'Laptop', defaultTitle: 'Provjeriti laptop', category: 'obaveza', Icon: Laptop }
     ]
   },
   {
     id: 'pas',
     title: 'Pas',
     items: [
-      { value: '🐕', label: 'Pas', Icon: Dog },
-      { value: '🐶', label: 'Nuki', Icon: Smile },
-      { value: '🦮', label: 'Šetnja psa', Icon: Footprints },
-      { value: '💙', label: 'Ljubimac', Icon: Heart }
+      { value: '🐕', label: 'Pas', defaultTitle: 'Prošetati psa', category: 'obaveza', Icon: Dog },
+      { value: '🐶', label: 'Nuki', defaultTitle: 'Prošetati Nukija', category: 'obaveza', Icon: Smile },
+      { value: '🦮', label: 'Šetnja psa', defaultTitle: 'Šetnja psa', category: 'obaveza', Icon: Footprints },
+      { value: '💙', label: 'Ljubimac', defaultTitle: 'Briga za ljubimca', category: 'obaveza', Icon: Heart }
     ]
   },
   {
     id: 'ostalo',
     title: 'Ostalo',
     items: [
-      { value: '⭐', label: 'Bitno', Icon: CheckCircle2 },
-      { value: '⏰', label: 'Podsjetnik', Icon: Bell },
-      { value: '📝', label: 'Bilješka', Icon: FileText },
-      { value: '🧠', label: 'Fokus', Icon: ClipboardList },
-      { value: '☀️', label: 'Jutro', Icon: Sun },
-      { value: '🌙', label: 'Večer', Icon: Moon },
-      { value: '🔥', label: 'Hitno', Icon: Flame },
-      { value: '🍎', label: 'Hrana', Icon: Apple },
-      { value: '🥗', label: 'Zdravo', Icon: HeartPulse },
-      { value: '🩺', label: 'Doktor', Icon: Stethoscope },
-      { value: '💼', label: 'Posao', Icon: Briefcase }
+      { value: '⭐', label: 'Bitno', defaultTitle: 'Bitna stvar', category: 'obaveza', Icon: CheckCircle2 },
+      { value: '⏰', label: 'Podsjetnik', defaultTitle: 'Podsjetnik', category: 'obaveza', Icon: Bell },
+      { value: '📝', label: 'Bilješka', defaultTitle: 'Zapisati bilješku', category: 'obaveza', Icon: FileText },
+      { value: '🧠', label: 'Fokus', defaultTitle: 'Fokus bez ometanja', category: 'obaveza', Icon: ClipboardList },
+      { value: '☀️', label: 'Jutro', defaultTitle: 'Jutarnja rutina', category: 'obaveza', Icon: Sun },
+      { value: '🌙', label: 'Večer', defaultTitle: 'Večernja rutina', category: 'obaveza', Icon: Moon },
+      { value: '🔥', label: 'Hitno', defaultTitle: 'Hitna obaveza', category: 'obaveza', Icon: Flame },
+      { value: '🍎', label: 'Hrana', defaultTitle: 'Pojesti obrok', category: 'prehrana', Icon: Apple },
+      { value: '🥗', label: 'Zdravo', defaultTitle: 'Pojesti zdravi obrok', category: 'prehrana', Icon: HeartPulse },
+      { value: '🩺', label: 'Doktor', defaultTitle: 'Nazvati doktora', category: 'zdravlje', Icon: Stethoscope },
+      { value: '💼', label: 'Posao', defaultTitle: 'Riješiti posao', category: 'obaveza', Icon: Briefcase }
     ]
   }
 ];
@@ -135,40 +135,40 @@ export default function IconPicker({ value, onChange }) {
   const basicGroup = ICON_GROUPS.find((group) => group.id === BASIC_GROUP_ID) || ICON_GROUPS[0];
   const categoryGroups = ICON_GROUPS.filter((group) => CATEGORY_GROUP_IDS.includes(group.id));
   const otherGroup = ICON_GROUPS.find((group) => group.id === OTHER_GROUP_ID);
-  const [categoriesExpanded, setCategoriesExpanded] = React.useState(false);
-  const [otherExpanded, setOtherExpanded] = React.useState(false);
+  const [openGroupId, setOpenGroupId] = React.useState(null);
 
-  const toggleCategories = () => setCategoriesExpanded((current) => !current);
-  const toggleOther = () => setOtherExpanded((current) => !current);
+  const toggleGroup = (groupId) => setOpenGroupId((current) => current === groupId ? null : groupId);
 
-  const onDropdownKeyDown = (event, toggle) => {
+  const onDropdownKeyDown = (event, groupId) => {
     if (event.key !== 'Enter' && event.key !== ' ') return;
     event.preventDefault();
-    toggle();
+    toggleGroup(groupId);
+  };
+
+  const selectIcon = (event, item) => {
+    event.stopPropagation();
+    onChange(item.value, item);
   };
 
   const renderGroup = (group) => (
     <div className={`iconGroup ${group.id === BASIC_GROUP_ID ? 'basicGroup' : ''}`} key={group.id}>
       <div className="iconGroupTitle">{group.title}</div>
       <div className="premiumIconGrid">
-        {group.items.map(({ value: itemValue, label, Icon }) => {
-          const selected = value === itemValue;
-          const SafeIcon = Icon || CheckCircle2;
+        {group.items.map((item) => {
+          const selected = value === item.value;
+          const SafeIcon = item.Icon || CheckCircle2;
           return (
             <button
               type="button"
-              key={`${group.id}-${itemValue}-${label}`}
+              key={`${group.id}-${item.value}-${item.label}`}
               className={selected ? 'premiumIconButton selected' : 'premiumIconButton'}
-              onClick={(event) => {
-                event.stopPropagation();
-                onChange(itemValue);
-              }}
+              onClick={(event) => selectIcon(event, item)}
             >
               <span className="premiumIconSymbol">
-                <span className="premiumIconEmoji" aria-hidden="true">{itemValue}</span>
+                <span className="premiumIconEmoji" aria-hidden="true">{item.value}</span>
                 <SafeIcon className="premiumIconAccent" size={14} strokeWidth={2.6} aria-hidden="true" />
               </span>
-              <small>{label}</small>
+              <small>{item.label}</small>
             </button>
           );
         })}
@@ -176,50 +176,45 @@ export default function IconPicker({ value, onChange }) {
     </div>
   );
 
-  const renderDropdown = ({ title, subtitle, expanded, onToggle, children }) => (
-    <div
-      className={`iconDropdown ${expanded ? 'expanded' : ''}`}
-      role="button"
-      tabIndex={0}
-      aria-expanded={expanded}
-      onClick={onToggle}
-      onKeyDown={(event) => onDropdownKeyDown(event, onToggle)}
-    >
-      <div className="iconDropdownHeader">
-        <div>
-          <strong>{title}</strong>
-          <small>{subtitle}</small>
+  const renderDropdown = (group) => {
+    const expanded = openGroupId === group.id;
+    return (
+      <div
+        className={`iconDropdown ${expanded ? 'expanded' : ''}`}
+        role="button"
+        tabIndex={0}
+        aria-expanded={expanded}
+        onClick={() => toggleGroup(group.id)}
+        onKeyDown={(event) => onDropdownKeyDown(event, group.id)}
+        key={group.id}
+      >
+        <div className="iconDropdownHeader">
+          <div className="iconDropdownPreview" aria-hidden="true">
+            {group.items.slice(0, 3).map((item) => <span key={`${group.id}-preview-${item.value}`}>{item.value}</span>)}
+          </div>
+          <div>
+            <strong>{group.title}</strong>
+            <small>{group.items.length} ikona</small>
+          </div>
+          <ChevronDown className="iconDropdownChevron" size={20} strokeWidth={2.8} />
         </div>
-        <ChevronDown className="iconDropdownChevron" size={20} strokeWidth={2.8} />
-      </div>
 
-      {expanded && (
-        <div className="iconDropdownContent" onClick={(event) => event.stopPropagation()}>
-          {children}
-        </div>
-      )}
-    </div>
-  );
+        {expanded && (
+          <div className="iconDropdownContent" onClick={(event) => event.stopPropagation()}>
+            {renderGroup(group)}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <section className="premiumIconPicker" aria-label="Odabir ikone">
       {renderGroup(basicGroup)}
 
-      {renderDropdown({
-        title: 'Kategorije',
-        subtitle: 'Trening, obaveze, dom i pas',
-        expanded: categoriesExpanded,
-        onToggle: toggleCategories,
-        children: categoryGroups.map(renderGroup)
-      })}
+      {categoryGroups.map(renderDropdown)}
 
-      {otherGroup && renderDropdown({
-        title: 'Ostale ikone',
-        subtitle: 'Ostalo',
-        expanded: otherExpanded,
-        onToggle: toggleOther,
-        children: renderGroup(otherGroup)
-      })}
+      {otherGroup && renderDropdown(otherGroup)}
     </section>
   );
 }
