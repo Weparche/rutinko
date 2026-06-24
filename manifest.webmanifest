@@ -1,0 +1,25 @@
+{
+  "name": "Rutinko",
+  "short_name": "Rutinko",
+  "description": "Jednostavni dnevni podsjetnici za rutine, obaveze i mini trening.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f6f8fc",
+  "theme_color": "#2563eb",
+  "orientation": "portrait",
+  "lang": "hr",
+  "icons": [
+    {
+      "src": "./icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
