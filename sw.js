@@ -1,9 +1,16 @@
-const CACHE_NAME = 'rutinko-v3';
+const CACHE_NAME = 'rutinko-v4';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
+  './enhance-layout.css',
+  './enhance-picker.css',
+  './enhance-polish.css',
   './app-v3.js',
+  './enhance-data.js',
+  './enhance-add.js',
+  './enhance-routines.js',
+  './enhance-actions.js',
   './manifest.webmanifest',
   './icons/icon-192.svg',
   './icons/icon-512.svg'
