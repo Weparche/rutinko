@@ -220,6 +220,90 @@
   box-shadow: none;
 }
 
+.scoreHero {
+  min-height: 0 !important;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 82px;
+  gap: 14px;
+  align-items: start;
+  padding: 18px !important;
+  border-radius: 30px !important;
+  overflow: hidden;
+}
+
+.scoreHero::before,
+.scoreHero::after,
+.scoreHero .heroAnimation {
+  display: none !important;
+}
+
+.heroCopy {
+  max-width: none !important;
+}
+
+.heroCopy span {
+  min-height: 26px;
+  padding-inline: 10px;
+  font-size: 9px;
+}
+
+.heroCopy h1 {
+  max-width: 100%;
+  margin: 10px 0 8px !important;
+  font-size: clamp(25px, 7vw, 32px) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -.07em;
+}
+
+.heroCopy p {
+  max-width: 250px;
+  font-size: 12.5px !important;
+  line-height: 1.36 !important;
+}
+
+.scoreRing {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  width: 76px !important;
+  height: 76px !important;
+  align-self: start;
+  justify-self: end;
+}
+
+.scoreValue strong {
+  font-size: 24px !important;
+}
+
+.scoreValue small {
+  font-size: 11px !important;
+}
+
+.metricRail {
+  position: relative !important;
+  z-index: 4;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  grid-column: 1 / -1;
+  margin-top: 2px;
+}
+
+.metric {
+  min-height: 54px !important;
+  padding: 9px !important;
+  border-radius: 18px !important;
+}
+
+.metric span {
+  font-size: 10px !important;
+}
+
+.metric strong {
+  margin-top: 5px !important;
+  font-size: 17px !important;
+}
+
 .focusCard {
   border: 1px solid rgba(18,104,255,.16);
   box-shadow: 0 22px 54px rgba(7,24,47,.14);
@@ -325,6 +409,29 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 @media (max-width: 430px) {
+  .scoreHero {
+    grid-template-columns: minmax(0, 1fr) 70px;
+    padding: 16px !important;
+    border-radius: 28px !important;
+  }
+
+  .heroCopy h1 {
+    font-size: 27px !important;
+  }
+
+  .heroCopy p {
+    max-width: 210px;
+  }
+
+  .scoreRing {
+    width: 68px !important;
+    height: 68px !important;
+  }
+
+  .metricRail {
+    gap: 6px !important;
+  }
+
   .focusHeader {
     margin-right: 70px !important;
     margin-left: 72px !important;
