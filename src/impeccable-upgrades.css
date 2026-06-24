@@ -57,7 +57,7 @@
 }
 
 .focusHeader {
-  margin-left: 68px;
+  margin-left: 72px;
 }
 
 .focusBody {
@@ -218,124 +218,120 @@
 .modalForm {
   margin-top: 0;
   box-shadow: none;
-  border: 0;
+}
+
+.focusCard {
+  border: 1px solid rgba(18,104,255,.16);
+  box-shadow: 0 22px 54px rgba(7,24,47,.14);
+}
+
+.focusHeader {
+  min-height: 36px;
+  margin: 0 86px 12px 72px !important;
   padding: 0;
 }
 
-.headerAction.isOff {
-  background: #fff1f2;
-  color: var(--red);
+.focusLabel {
+  display: inline-flex !important;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(18,104,255,.12), rgba(0,194,255,.10));
+  color: var(--blue) !important;
+  box-shadow: inset 0 0 0 1px rgba(18,104,255,.14);
 }
 
-.headerAction.isOn {
-  background: var(--navy);
+.sectionPanel {
+  padding: 10px;
+  border-radius: 28px;
+  background: rgba(255,255,255,.82);
+  border: 1px solid var(--line);
+  box-shadow: var(--soft);
 }
 
-.animatedMomentHost {
-  pointer-events: none;
+.sectionPanel.morning {
+  background: linear-gradient(145deg, #fffdf6, #ffffff);
 }
 
-.animatedMoment svg {
-  display: block;
+.sectionPanel.done,
+.sectionPanel.once {
+  background: linear-gradient(145deg, #f9fbff, #ffffff);
+}
+
+.sectionToggle {
   width: 100%;
-  height: 100%;
+  min-height: 52px;
+  margin: 0;
+  padding: 4px 4px 9px;
+  background: transparent;
 }
 
-.heroAnimation {
-  position: absolute;
-  z-index: 2;
-  right: 18px;
-  top: 112px;
-  width: 92px;
-  height: 92px;
-  opacity: .9;
-  filter: drop-shadow(0 18px 26px rgba(0,0,0,.18));
+.sectionTitle,
+.sectionMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 
-.focusDogAnimation {
-  position: absolute;
-  right: 12px;
-  bottom: 70px;
-  width: 78px;
-  height: 78px;
-  opacity: .96;
+.sectionIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: #eef6ff;
+  box-shadow: inset 0 0 0 1px #dce9ff;
+  font-size: 18px;
 }
 
-.taskDogAnimation {
-  position: absolute;
-  right: 88px;
-  bottom: 6px;
-  width: 42px;
-  height: 42px;
-  opacity: .92;
+.sectionTitle h2 {
+  margin: 0;
 }
 
-.doneAnimation {
-  width: 54px;
-  height: 54px;
+.sectionMeta small {
+  margin-right: 2px;
 }
 
-.allDoneCard > span {
+.sectionChevron {
+  color: var(--blue);
+  transition: transform .18s ease;
+}
+
+.sectionPanel.open .sectionChevron {
+  transform: rotate(180deg);
+}
+
+.sectionPanel.collapsed {
+  padding-bottom: 6px;
+}
+
+.fieldText {
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+input[type="time"]::-webkit-datetime-edit-ampm-field {
   display: none;
 }
 
-.allDoneCard .animatedMomentHost {
-  grid-column: 1;
-  grid-row: 1;
-  align-self: center;
-  justify-self: center;
-}
-
-.newDayAnimation {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 10px;
-}
-
-.confirmModal .modalIcon {
-  display: none;
-}
-
-.confirmModal .animatedMomentHost {
-  display: block;
+input[type="time"]::-webkit-calendar-picker-indicator {
+  opacity: .72;
 }
 
 @media (max-width: 430px) {
-  .modalBackdrop {
-    padding: 10px;
-  }
-
-  .confirmModal,
-  .editModal {
-    border-radius: 28px;
-  }
-
-  .modalActions {
-    grid-template-columns: 1fr;
-  }
-
   .focusHeader {
-    margin-left: 58px;
+    margin-right: 70px !important;
+    margin-left: 72px !important;
   }
 
-  .focusBody {
-    padding-right: 0;
-  }
-
-  .heroAnimation {
-    right: 14px;
-    top: 116px;
-    width: 78px;
-    height: 78px;
-  }
-
-  .focusDogAnimation {
-    width: 58px;
-    height: 58px;
-    bottom: 122px;
-  }
-
-  .taskDogAnimation {
-    display: none;
+  .sectionPanel {
+    border-radius: 24px;
+    padding: 8px;
   }
 }
