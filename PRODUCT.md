@@ -13,6 +13,7 @@ The app should help users remember and complete basic daily essentials:
 - take medication
 - drink water
 - do mini exercise, such as 20 sit-ups in the morning and evening
+- walk the dog
 - shower
 - pay bills
 - file taxes
@@ -26,8 +27,8 @@ The user does not want a complex todo app, calendar, habit tracker, or productiv
 They want a simple loop:
 
 1. Rutinko reminds them.
-2. They tap Done, Snooze 30 min, or Remind in 5 min.
-3. If they do nothing, Rutinko keeps reminding them.
+2. They tap Done, Snooze 30 min, or Skip.
+3. If they do nothing, Rutinko keeps reminding them every 5 minutes until the task is resolved.
 
 ## Product lane
 
@@ -58,7 +59,7 @@ Every active task needs these actions:
 
 - Done
 - Snooze 30 min
-- Remind in 5 min
+- Skip for today
 
 ## Main screens
 
@@ -76,6 +77,7 @@ Every active task needs these actions:
 - 20 trbušnjaka
 - 20 trbušnjaka navečer
 - Prošetati 10 minuta
+- Prošetati psa
 - Istezanje
 - Otuširati se
 - Oprati zube navečer
