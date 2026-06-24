@@ -25,13 +25,20 @@ function PremiumPickerBridge({ picker }) {
 
 function enhancePicker(picker) {
   if (!picker || mounted.has(picker)) return;
-  picker.classList.add('enhancedHidden');
   const host = document.createElement('div');
   host.className = 'premiumIconPickerHost';
   picker.insertAdjacentElement('beforebegin', host);
-  const root = createRoot(host);
-  mounted.set(picker, root);
-  root.render(<PremiumPickerBridge picker={picker} />);
+
+  try {
+    const root = createRoot(host);
+    mounted.set(picker, root);
+    root.render(<PremiumPickerBridge picker={picker} />);
+    picker.classList.add('enhancedHidden');
+  } catch (error) {
+    host.remove();
+    picker.classList.remove('enhancedHidden');
+    console.warn('Rutinko premium icon picker fallback active.', error);
+  }
 }
 
 function enhance() {
