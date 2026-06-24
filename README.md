@@ -1,6 +1,6 @@
 # Rutinko
 
-Rutinko je jednostavna PWA aplikacija za dnevne rutine, osnovne obaveze i mini treninge.
+Rutinko je React + Vite PWA aplikacija za dnevne rutine, osnovne obaveze i mini treninge.
 
 ## Poanta
 
@@ -15,14 +15,17 @@ Aplikacija služi kao dnevni autopilot za stvari koje ne želiš držati u glavi
 - prijaviti porez
 - odvesti auto na servis
 - platiti račun
+- nazvati nekoga dragog
 
-## MVP funkcije
+## Funkcije
 
-- mobile-first UI
+- React komponente i Vite build
+- mobile-first premium UI
 - današnji zadaci grupirani u Jutro, Dan, Večer i Jednokratno
 - gotove rutine / predlošci
 - dodavanje vlastitih zadataka
-- ponavljanje: jednom, svaki dan, radnim danom, tjedno, mjesečno
+- odabir ikona, uključujući srce
+- ponavljanje: jednom, svaki dan, radnim danom, tjedno, mjesečno, godišnje
 - gumbi: Završeno, Odgodi, Podsjeti za 5 min
 - lokalno spremanje u browseru
 - PWA manifest i service worker
@@ -32,23 +35,33 @@ Aplikacija služi kao dnevni autopilot za stvari koje ne želiš držati u glavi
 - period tišine, npr. 22:30–07:00
 - dnevni i tjedni progress za mini trening
 
-## Važna napomena za notifikacije
+## Cloudflare Pages
 
-Ovo je browser/PWA MVP. Notifikacije najbolje rade kada je aplikacija otvorena ili instalirana kao PWA. Za potpuno pouzdane podsjetnike dok je aplikacija zatvorena, sljedeći korak je native mobilna aplikacija ili backend push sustav.
+Postavke za deploy:
 
-## Pokretanje
+- Framework preset: `Vite`
+- Build command: `npm run build`
+- Build output directory: `dist`
 
-Repo je statički i može se otvoriti direktno kroz `index.html` ili deployati na Cloudflare Pages / GitHub Pages.
+## Lokalno pokretanje
 
-Za Cloudflare Pages može se koristiti:
-
-- Build command: prazno
-- Output directory: `/`
+```bash
+npm install
+npm run dev
+```
 
 ## Glavne datoteke
 
-- `index.html` – ulazna stranica
-- `app-v2.js` – glavna aplikacijska logika
-- `style.css` – UI/UX stilovi
-- `manifest.webmanifest` – PWA konfiguracija
-- `sw.js` – service worker i offline cache
+- `index.html` – Vite ulazna stranica
+- `package.json` – npm skripte i React/Vite dependencyji
+- `src/main.jsx` – glavna React aplikacija
+- `src/data.js` – rutine, ikone i opcije
+- `src/utils.js` – datumi, ponavljanja i helper funkcije
+- `src/styles.css` – premium mobile UI
+- `public/manifest.webmanifest` – PWA konfiguracija
+- `public/sw.js` – service worker
+- `public/icons/` – PWA ikone
+
+## Napomena za notifikacije
+
+Ovo je browser/PWA aplikacija. Notifikacije najbolje rade kada je aplikacija otvorena ili instalirana kao PWA. Za potpuno pouzdane podsjetnike dok je aplikacija skroz zatvorena, sljedeći korak je native mobilna aplikacija ili backend push sustav.
