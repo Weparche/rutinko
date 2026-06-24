@@ -45,8 +45,8 @@ A routine that appears on Today only on its creation day, then remains available
 _Avoid_: auto-deleted task, permanent routine
 
 **New Day**:
-A user-triggered reset of today's statuses, skipped tasks, snoozes and notification history while keeping routines intact.
-_Avoid_: reset app, clear all, delete routines
+A user-triggered reset of today's statuses, skipped tasks, snoozes and notification history while keeping routines intact. It does not let the user pick or change the current date.
+_Avoid_: calendar day switcher, manual date mode, reset app, clear all, delete routines
 
 **Reminder**:
 The in-app reminder loop that keeps nudging unresolved tasks when browser notification permission exists and reminders are enabled.
