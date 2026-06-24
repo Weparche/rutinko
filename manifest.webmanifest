@@ -1,13 +1,15 @@
 {
   "name": "Rutinko",
   "short_name": "Rutinko",
-  "description": "Jednostavni dnevni podsjetnici za rutine, obaveze i mini trening.",
+  "description": "Tvoj dnevni autopilot za bitne stvari: rutine, obaveze i mini trening.",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#f6f8fc",
-  "theme_color": "#2563eb",
+  "background_color": "#f3f7ff",
+  "theme_color": "#0d6efd",
   "orientation": "portrait",
   "lang": "hr",
+  "categories": ["productivity", "health", "lifestyle"],
   "icons": [
     {
       "src": "./icons/icon-192.svg",
