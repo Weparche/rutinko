@@ -203,4 +203,14 @@
   .premiumIconButton {
     min-height: 74px;
   }
+
+  .headerAction.install {
+    width: auto;
+    min-width: 112px;
+    padding: 0 12px;
+  }
+
+  .headerAction.install span {
+    display: inline !important;
+  }
 }
