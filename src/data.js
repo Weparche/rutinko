@@ -8,27 +8,20 @@ export const DEFAULT_SETTINGS = {
 
 export const ROUTINES = [
   { title: 'Oprati zube', icon: '🪥', time: '07:30', repeat: 'daily', category: 'higijena' },
+  { title: 'Otuširati se', icon: '🚿', time: '07:40', repeat: 'daily', category: 'higijena' },
   { title: 'Pojesti doručak', icon: '🍳', time: '08:00', repeat: 'daily', category: 'prehrana' },
+  { title: 'Popiti vode', icon: '💧', time: '08:00', repeat: 'daily', category: 'zdravlje', scheduleType: 'water-2h', startTime: '08:00', endTime: '22:00', intervalMinutes: 120 },
   { title: 'Popiti tablete', icon: '💊', time: '08:15', repeat: 'daily', category: 'zdravlje' },
   { title: '20 trbušnjaka', icon: '💪', time: '08:20', repeat: 'daily', category: 'tjelovježba' },
-  { title: 'Popiti vode', icon: '💧', time: '12:00', repeat: 'daily', category: 'zdravlje' },
-  { title: 'Prošetati 10 minuta', icon: '🚶', time: '18:00', repeat: 'daily', category: 'tjelovježba' },
-  { title: 'Prošetati psa', icon: '🐕', time: '18:30', repeat: 'daily', category: 'obaveza' },
-  { title: '20 trbušnjaka navečer', icon: '💪', time: '20:00', repeat: 'daily', category: 'tjelovježba' },
-  { title: 'Otuširati se', icon: '🚿', time: '20:30', repeat: 'daily', category: 'higijena' },
-  { title: 'Oprati zube navečer', icon: '🪥', time: '21:30', repeat: 'daily', category: 'higijena' },
-  { title: 'Istezanje', icon: '🧘', time: '21:00', repeat: 'daily', category: 'tjelovježba' },
-  { title: 'Prijaviti porez', icon: '📄', time: '09:00', repeat: 'yearly', category: 'obaveza' },
-  { title: 'Odvesti auto na servis', icon: '🚗', time: '09:00', repeat: 'once', category: 'obaveza' },
-  { title: 'Platiti račun', icon: '💶', time: '10:00', repeat: 'monthly', category: 'obaveza' },
-  { title: 'Baciti smeće', icon: '🗑️', time: '19:00', repeat: 'weekly', category: 'obaveza' },
-  { title: 'Nazvati doktora', icon: '☎️', time: '10:00', repeat: 'once', category: 'zdravlje' },
-  { title: 'Nazvati nekoga dragog', icon: '❤️', time: '17:00', repeat: 'weekly', category: 'obaveza' }
+  { title: 'Prošetati se', icon: '🚶', time: '10:00', repeat: 'daily', category: 'tjelovježba' },
+  { title: 'Pojesti ručak', icon: '🥗', time: '12:30', repeat: 'daily', category: 'prehrana' },
+  { title: 'Večera', icon: '🍎', time: '19:00', repeat: 'daily', category: 'prehrana' },
+  { title: 'Večernja šetnja', icon: '🚶', time: '20:00', repeat: 'daily', category: 'tjelovježba' }
 ];
 
 export const ICONS = [
   '🪥', '🍳', '💊', '💪', '💧', '🚶', '🐕', '🐶', '🦮', '🧘', '🚿', '📄', '🚗', '💶', '🗑️', '☎️',
-  '💙', '❤️', '⭐', '✅', '⏰', '🧠', '🏠', '🛒', '🧼', '🧴', '🛏️', '📚', '💻', '📞', '📝', '📅', '🎯', '☀️', '🌙', '🔥'
+  '💙', '❤️', '⭐', '✅', '⏰', '🧠', '🏠', '🛒', '🧼', '🧴', '🛏️', '📚', '💻', '📞', '📝', '📅', '🎯', '☀️', '🌙', '🔥', '🥗', '🍎'
 ];
 
 export const REPEAT_OPTIONS = [
