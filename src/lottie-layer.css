@@ -4,13 +4,9 @@
   align-items: stretch;
 }
 
-.confirmModal .animatedMomentHost {
-  order: -1;
+.allDoneCard .doneAnimation {
   align-self: center;
-}
-
-.allDoneCard .animatedMomentHost {
-  align-self: center;
+  justify-self: center;
 }
 
 .heroAnimation {
@@ -25,4 +21,13 @@
 .taskCard:hover .taskDogAnimation,
 .focusCard:hover .focusDogAnimation {
   transform: translateY(-2px) scale(1.02);
+}
+
+.confirmModal .newDayAnimation {
+  align-self: center;
+  order: -1;
+}
+
+.allDoneCard {
+  grid-template-columns: 54px minmax(0, 1fr) 74px;
 }
