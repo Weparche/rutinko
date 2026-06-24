@@ -1,4 +1,5 @@
 export const DEFAULT_SETTINGS = {
+  remindersEnabled: true,
   reminderIntervalMinutes: 5,
   snoozeMinutes: 30,
   quietStart: '22:30',
