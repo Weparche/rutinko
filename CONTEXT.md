@@ -8,8 +8,12 @@ Rutinko is a Croatian mobile-first daily autopilot for routines, simple obligati
 The app itself: a simple daily autopilot that helps the user remember and resolve important routine items.
 _Avoid_: todo app, calendar, productivity suite
 
+**Routine Template**:
+A built-in catalog item that can be copied into My Routines but is not itself editable by the user.
+_Avoid_: user routine, editable preset, factory routine
+
 **Routine**:
-A reusable task template that can appear on the Today screen according to its repeat rule.
+A reusable task template owned by the user that can appear on the Today screen according to its repeat rule.
 _Avoid_: habit, checklist item, calendar event
 
 **Task**:
