@@ -1,5 +1,9 @@
-.iconPicker.enhancedHidden {
+.premiumIconPickerHost + .iconPicker.enhancedHidden {
   display: none !important;
+}
+
+.premiumIconPickerHost:empty + .iconPicker.enhancedHidden {
+  display: grid !important;
 }
 
 .premiumIconPickerHost {
