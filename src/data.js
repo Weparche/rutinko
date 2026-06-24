@@ -12,6 +12,7 @@ export const ROUTINES = [
   { title: '20 trbušnjaka', icon: '💪', time: '08:20', repeat: 'daily', category: 'tjelovježba' },
   { title: 'Popiti vode', icon: '💧', time: '12:00', repeat: 'daily', category: 'zdravlje' },
   { title: 'Prošetati 10 minuta', icon: '🚶', time: '18:00', repeat: 'daily', category: 'tjelovježba' },
+  { title: 'Prošetati psa', icon: '🐕', time: '18:30', repeat: 'daily', category: 'obaveza' },
   { title: '20 trbušnjaka navečer', icon: '💪', time: '20:00', repeat: 'daily', category: 'tjelovježba' },
   { title: 'Otuširati se', icon: '🚿', time: '20:30', repeat: 'daily', category: 'higijena' },
   { title: 'Oprati zube navečer', icon: '🪥', time: '21:30', repeat: 'daily', category: 'higijena' },
@@ -25,7 +26,7 @@ export const ROUTINES = [
 ];
 
 export const ICONS = [
-  '🪥', '🍳', '💊', '💪', '💧', '🚶', '🧘', '🚿', '📄', '🚗', '💶', '🗑️', '☎️',
+  '🪥', '🍳', '💊', '💪', '💧', '🚶', '🐕', '🐶', '🦮', '🧘', '🚿', '📄', '🚗', '💶', '🗑️', '☎️',
   '💙', '❤️', '⭐', '✅', '⏰', '🧠', '🏠', '🛒', '🧼', '🧴', '🛏️', '📚', '💻', '📞', '📝', '📅', '🎯', '☀️', '🌙', '🔥'
 ];
 
