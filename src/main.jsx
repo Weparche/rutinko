@@ -4,9 +4,7 @@ import {
   Bell,
   Check,
   Clock3,
-  Dog,
   Download,
-  Footprints,
   Home,
   ListChecks,
   Pencil,
@@ -19,10 +17,14 @@ import {
 } from 'lucide-react';
 import './styles.css';
 import './impeccable-upgrades.css';
-import { CATEGORY_OPTIONS, DEFAULT_SETTINGS, ICONS, REPEAT_OPTIONS, ROUTINES, categoryLabel, repeatLabel } from './data.js';
+import './premium-icons.css';
+import './lottie-layer.css';
+import AnimatedMoment from './AnimatedMoment.jsx';
+import IconPicker, { IconVisual } from './IconPicker.jsx';
+import { CATEGORY_OPTIONS, DEFAULT_SETTINGS, REPEAT_OPTIONS, ROUTINES, categoryLabel, repeatLabel } from './data.js';
 import { createTask, currentWeekDates, dateKey, dayPart, dueTime, isQuietTime, occurrenceId, occursOn, taskStatus } from './utils.js';
 
-const STORAGE_KEY = 'rutinko-impeccable-polish-v3';
+const STORAGE_KEY = 'rutinko-impeccable-polish-v4';
 const LOGO = '/brand/rutinko-logo.webp';
 
 function getInitialState() {
@@ -391,6 +393,7 @@ function TodayScreen(props) {
     <section className="scoreHero">
       <div className="heroCopy"><span>Daily flow</span><h1>{props.openCount ? `${props.openCount} ${props.openCount === 1 ? 'stvar' : 'stvari'} do mirne glave` : 'Mirna glava'}</h1><p>{props.openCount ? 'Jedan fokus, jedan tap, bez držanja svega u glavi.' : 'Danas je riješeno. Zatvori dan bez kaosa.'}</p></div>
       <div className="scoreRing" style={{ '--score': props.progress }}><div className="scoreValue"><strong>{props.progress}</strong><small>%</small></div></div>
+      <AnimatedMoment name="dailyScore" className="heroAnimation" />
       <div className="metricRail"><Metric label="Riješeno" value={`${props.resolvedCount}/${props.tasks.length}`} /><Metric label="Trening" value={`${props.exerciseToday.done}/${props.exerciseToday.total}`} /><Metric label="Tjedan" value={`${props.exerciseWeek.done}/${props.exerciseWeek.total}`} /></div>
     </section>
     {props.nextTask ? <FocusCard task={props.nextTask} status={props.statusFor(props.nextTask)} onDone={props.onDone} onSnooze={props.onSnooze} onSkip={props.onSkip} onDelete={props.onDelete} onEdit={props.onEdit} settings={props.settings} /> : <AllDoneCard setTab={props.setTab} />}
@@ -408,17 +411,19 @@ function Metric({ label, value }) {
 }
 
 function FocusCard({ task, status, onDone, onSnooze, onSkip, onDelete, onEdit, settings }) {
+  const dog = isDogTask(task);
   return <section className={`focusCard ${status.tone}`}>
     <button className="editTop" onClick={() => onEdit(task)}><Pencil size={14} /><span>Uredi</span></button>
     <button className="deleteTop" onClick={() => onDelete(task.id)}><X size={14} /><span>Izbriši</span></button>
     <div className="focusHeader"><span>Sljedeći fokus</span><small>{task.time} · {status.label}</small></div>
     <div className="focusBody"><TaskGlyph task={task} className="focusIcon" /><div><h2>{task.title}</h2><p>Riješi odmah, odgodi ili preskoči za danas.</p></div></div>
+    {dog && <AnimatedMoment name="dogWalk" className="focusDogAnimation" />}
     <div className="focusActions"><button onClick={() => onDone(task.id)}><Check size={18} />Završeno</button><button onClick={() => onSnooze(task.id, settings.snoozeMinutes)}><Clock3 size={18} />Odgodi {settings.snoozeMinutes} min</button><button onClick={() => onSkip(task.id)}><SkipForward size={18} />Preskoči</button></div>
   </section>;
 }
 
 function AllDoneCard({ setTab }) {
-  return <section className="allDoneCard"><span><Check size={26} /></span><div><h2>Sve bitno je riješeno.</h2><p>Dodaj novu rutinu samo ako stvarno treba.</p></div><button onClick={() => setTab('add')}>Dodaj</button></section>;
+  return <section className="allDoneCard"><AnimatedMoment name="doneCheck" className="doneAnimation" loop={false} /><div><h2>Sve bitno je riješeno.</h2><p>Dodaj novu rutinu samo ako stvarno treba.</p></div><button onClick={() => setTab('add')}>Dodaj</button></section>;
 }
 
 function TaskSection({ title, tasks, isResolved, isSkipped, statusFor, onDone, onUndo, onSnooze, onSkip, onDelete, onEdit, settings }) {
@@ -428,26 +433,25 @@ function TaskSection({ title, tasks, isResolved, isSkipped, statusFor, onDone, o
 }
 
 function TaskCard({ task, resolved, status, onDone, onUndo, onSnooze, onSkip, onDelete, onEdit, settings }) {
+  const dog = isDogTask(task);
   return <article className={`taskCard ${status.tone}`}>
     <button className="editTop cardEdit" onClick={() => onEdit(task)}><Pencil size={13} /><span>Uredi</span></button>
     <button className="deleteTop cardDelete" onClick={() => onDelete(task.id)}><X size={13} /><span>Izbriši</span></button>
     <div className="taskMeta"><TaskGlyph task={task} className="taskIcon" /><div><h3>{task.title}</h3><p>{task.time} · {status.label}</p></div></div>
+    {dog && <AnimatedMoment name="dogWalk" className="taskDogAnimation" />}
     <div className="quickActions">{resolved ? <><button className="success" onClick={() => onUndo(task.id)}><Check size={16} /><small>Vrati</small></button><button className="danger" onClick={() => onDelete(task.id)}><Trash2 size={16} /><small>Briši</small></button></> : <><button className="success" onClick={() => onDone(task.id)}><Check size={16} /><small>Done</small></button><button onClick={() => onSnooze(task.id, settings.snoozeMinutes)}><Clock3 size={16} /><small>{settings.snoozeMinutes}m</small></button><button onClick={() => onSkip(task.id)}><SkipForward size={16} /><small>Preskoči</small></button></>}</div>
   </article>;
 }
 
 function TaskGlyph({ task, className }) {
-  const title = task.title.toLowerCase();
-  if (title.includes('psa')) return <div className={className}><Dog size={25} strokeWidth={2.4} /></div>;
-  if (title.includes('prošetati')) return <div className={className}><Footprints size={25} strokeWidth={2.4} /></div>;
-  return <div className={className}>{task.icon}</div>;
+  return <div className={className}><IconVisual value={task.icon} title={task.title} size={25} strokeWidth={2.4} /></div>;
 }
 
 function AddScreen({ form, setForm, selectedRoutine, pickRoutine, saveTask }) {
   return <>
     <section className="creatorHero"><TaskGlyph task={form} className="creatorIcon" /><div><span>Rutinko builder</span><h1>{form.title || 'Novi zadatak'}</h1><p>{form.time} · {repeatLabel[form.repeat]} · {categoryLabel[form.category]}</p></div></section>
     <section className="presetBlock"><div className="sectionHeader compact"><h2>Brzo iz rutina</h2><small>{ROUTINES.length} rutina</small></div><div className="chips">{ROUTINES.map((routine, index) => <button key={`${routine.title}-${index}`} className={index === selectedRoutine ? 'chip active' : 'chip'} onClick={() => pickRoutine(index)}><TaskGlyph task={routine} className="chipIcon" /><span>{routine.title}</span></button>)}</div></section>
-    <section className="formPanel"><Field label="Naziv" icon="✎"><input value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} /></Field><div className="iconPicker" aria-label="Odabir ikone">{ICONS.map((icon) => <button key={icon} className={icon === form.icon ? 'selected' : ''} onClick={() => setForm({ ...form, icon })}>{icon}</button>)}</div><Field label="Vrijeme" icon="◷"><input type="time" value={form.time} onChange={(event) => setForm({ ...form, time: event.target.value })} /></Field><Field label="Ponavljanje" icon="↻"><select value={form.repeat} onChange={(event) => setForm({ ...form, repeat: event.target.value })}>{REPEAT_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><Field label="Kategorija" icon="◇"><select value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })}>{CATEGORY_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><button className="saveButton" onClick={saveTask}><Check size={18} />Spremi zadatak</button></section>
+    <section className="formPanel"><Field label="Naziv" icon="✎"><input value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} /></Field><IconPicker value={form.icon} onChange={(icon) => setForm({ ...form, icon })} /><Field label="Vrijeme" icon="◷"><input type="time" value={form.time} onChange={(event) => setForm({ ...form, time: event.target.value })} /></Field><Field label="Ponavljanje" icon="↻"><select value={form.repeat} onChange={(event) => setForm({ ...form, repeat: event.target.value })}>{REPEAT_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><Field label="Kategorija" icon="◇"><select value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })}>{CATEGORY_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><button className="saveButton" onClick={saveTask}><Check size={18} />Spremi zadatak</button></section>
   </>;
 }
 
@@ -469,11 +473,11 @@ function Setting({ title, text, children }) {
 }
 
 function NewDayDialog({ onCancel, onConfirm }) {
-  return <div className="modalBackdrop" role="dialog" aria-modal="true"><div className="confirmModal"><div className="modalIcon"><RefreshCcw size={26} /></div><h2>Izraditi novi dan?</h2><p>Današnji završeni, preskočeni i odgođeni statusi bit će obrisani. Rutine ostaju spremljene.</p><div className="modalActions"><button className="modalCancel" onClick={onCancel}>Odustani</button><button className="modalPrimary" onClick={onConfirm}>Izradi novi dan</button></div></div></div>;
+  return <div className="modalBackdrop" role="dialog" aria-modal="true"><div className="confirmModal"><AnimatedMoment name="newDay" className="newDayAnimation" /><h2>Izraditi novi dan?</h2><p>Današnji završeni, preskočeni i odgođeni statusi bit će obrisani. Rutine ostaju spremljene.</p><div className="modalActions"><button className="modalCancel" onClick={onCancel}>Odustani</button><button className="modalPrimary" onClick={onConfirm}>Izradi novi dan</button></div></div></div>;
 }
 
 function EditTaskModal({ task, setTask, onSave, onDelete, onClose }) {
-  return <div className="modalBackdrop" role="dialog" aria-modal="true"><div className="editModal"><button className="modalClose" onClick={onClose}><X size={18} /></button><div className="creatorHero modalPreview"><TaskGlyph task={task} className="creatorIcon" /><div><span>Uredi zadatak</span><h1>{task.title || 'Zadatak'}</h1><p>{task.time} · {repeatLabel[task.repeat]} · {categoryLabel[task.category]}</p></div></div><div className="formPanel modalForm"><Field label="Naziv" icon="✎"><input value={task.title} onChange={(event) => setTask({ ...task, title: event.target.value })} /></Field><div className="iconPicker" aria-label="Odabir ikone">{ICONS.map((icon) => <button key={icon} className={icon === task.icon ? 'selected' : ''} onClick={() => setTask({ ...task, icon })}>{icon}</button>)}</div><Field label="Vrijeme" icon="◷"><input type="time" value={task.time} onChange={(event) => setTask({ ...task, time: event.target.value })} /></Field><Field label="Ponavljanje" icon="↻"><select value={task.repeat} onChange={(event) => setTask({ ...task, repeat: event.target.value })}>{REPEAT_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><Field label="Kategorija" icon="◇"><select value={task.category} onChange={(event) => setTask({ ...task, category: event.target.value })}>{CATEGORY_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><button className="saveButton" onClick={onSave}><Check size={18} />Spremi izmjene</button><button className="resetButton" onClick={onDelete}><Trash2 size={18} />Izbriši zadatak</button></div></div></div>;
+  return <div className="modalBackdrop" role="dialog" aria-modal="true"><div className="editModal"><button className="modalClose" onClick={onClose}><X size={18} /></button><div className="creatorHero modalPreview"><TaskGlyph task={task} className="creatorIcon" /><div><span>Uredi zadatak</span><h1>{task.title || 'Zadatak'}</h1><p>{task.time} · {repeatLabel[task.repeat]} · {categoryLabel[task.category]}</p></div></div><div className="formPanel modalForm"><Field label="Naziv" icon="✎"><input value={task.title} onChange={(event) => setTask({ ...task, title: event.target.value })} /></Field><IconPicker value={task.icon} onChange={(icon) => setTask({ ...task, icon })} /><Field label="Vrijeme" icon="◷"><input type="time" value={task.time} onChange={(event) => setTask({ ...task, time: event.target.value })} /></Field><Field label="Ponavljanje" icon="↻"><select value={task.repeat} onChange={(event) => setTask({ ...task, repeat: event.target.value })}>{REPEAT_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><Field label="Kategorija" icon="◇"><select value={task.category} onChange={(event) => setTask({ ...task, category: event.target.value })}>{CATEGORY_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><button className="saveButton" onClick={onSave}><Check size={18} />Spremi izmjene</button><button className="resetButton" onClick={onDelete}><Trash2 size={18} />Izbriši zadatak</button></div></div></div>;
 }
 
 function FooterNav({ tab, setTab }) {
@@ -484,6 +488,11 @@ function FooterNav({ tab, setTab }) {
     ['settings', Settings, 'Postavke', '#ff6b9d']
   ];
   return <nav className="footerNav">{items.map(([id, Icon, label, color]) => <button key={id} className={tab === id ? 'active' : ''} style={{ '--item-color': color }} onClick={() => setTab(id)}><Icon size={22} strokeWidth={2.4} /><span>{label}</span></button>)}</nav>;
+}
+
+function isDogTask(task) {
+  const text = `${task?.title || ''} ${task?.icon || ''}`.toLowerCase();
+  return text.includes('psa') || text.includes('pas') || text.includes('🐕') || text.includes('🐶') || text.includes('🦮');
 }
 
 function formatClock(timestamp) {
