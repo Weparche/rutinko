@@ -8,6 +8,7 @@ import {
   CalendarDays,
   Car,
   CheckCircle2,
+  ChevronDown,
   ClipboardList,
   Dog,
   Dumbbell,
@@ -116,6 +117,7 @@ export const ICON_GROUPS = [
 ];
 
 const FLAT_ICONS = ICON_GROUPS.flatMap((group) => group.items);
+const BASIC_GROUP_ID = 'osnovno';
 
 export function findIconMeta(value, title = '') {
   const text = `${value || ''} ${title || ''}`.toLowerCase();
@@ -124,38 +126,84 @@ export function findIconMeta(value, title = '') {
   return FLAT_ICONS.find((item) => item.value === value) || null;
 }
 
-export function IconVisual({ value, title = '', size = 25, strokeWidth = 2.4 }) {
+export function IconVisual({ value, title = '' }) {
   const meta = findIconMeta(value, title);
-  if (!meta?.Icon) return <span className="emojiFallback">{value || '⭐'}</span>;
-  const Icon = meta.Icon;
-  return <Icon size={size} strokeWidth={strokeWidth} />;
+  return <span className="emojiIconVisual" aria-hidden="true">{meta?.value || value || '⭐'}</span>;
 }
 
 export default function IconPicker({ value, onChange }) {
+  const basicGroup = ICON_GROUPS.find((group) => group.id === BASIC_GROUP_ID) || ICON_GROUPS[0];
+  const extraGroups = ICON_GROUPS.filter((group) => group.id !== basicGroup.id);
+  const selectedIsBasic = basicGroup.items.some((item) => item.value === value);
+  const [expanded, setExpanded] = React.useState(() => !selectedIsBasic);
+
+  React.useEffect(() => {
+    if (!selectedIsBasic) setExpanded(true);
+  }, [selectedIsBasic]);
+
+  const toggleExpanded = () => setExpanded((current) => !current);
+
+  const onDropdownKeyDown = (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    toggleExpanded();
+  };
+
+  const renderGroup = (group) => (
+    <div className={`iconGroup ${group.id === BASIC_GROUP_ID ? 'basicGroup' : ''}`} key={group.id}>
+      <div className="iconGroupTitle">{group.title}</div>
+      <div className="premiumIconGrid">
+        {group.items.map(({ value: itemValue, label, Icon }) => {
+          const selected = value === itemValue;
+          const SafeIcon = Icon || CheckCircle2;
+          return (
+            <button
+              type="button"
+              key={`${group.id}-${itemValue}-${label}`}
+              className={selected ? 'premiumIconButton selected' : 'premiumIconButton'}
+              onClick={(event) => {
+                event.stopPropagation();
+                onChange(itemValue);
+              }}
+            >
+              <span className="premiumIconSymbol">
+                <span className="premiumIconEmoji" aria-hidden="true">{itemValue}</span>
+                <SafeIcon className="premiumIconAccent" size={14} strokeWidth={2.6} aria-hidden="true" />
+              </span>
+              <small>{label}</small>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   return (
     <section className="premiumIconPicker" aria-label="Odabir ikone">
-      {ICON_GROUPS.map((group) => (
-        <div className="iconGroup" key={group.id}>
-          <div className="iconGroupTitle">{group.title}</div>
-          <div className="premiumIconGrid">
-            {group.items.map(({ value: itemValue, label, Icon }) => {
-              const selected = value === itemValue;
-              const SafeIcon = Icon || CheckCircle2;
-              return (
-                <button
-                  type="button"
-                  key={`${group.id}-${itemValue}-${label}`}
-                  className={selected ? 'premiumIconButton selected' : 'premiumIconButton'}
-                  onClick={() => onChange(itemValue)}
-                >
-                  <span className="premiumIconSymbol"><SafeIcon size={23} strokeWidth={2.45} /></span>
-                  <small>{label}</small>
-                </button>
-              );
-            })}
+      {renderGroup(basicGroup)}
+
+      <div
+        className={`iconDropdown ${expanded ? 'expanded' : ''}`}
+        role="button"
+        tabIndex={0}
+        aria-expanded={expanded}
+        onClick={toggleExpanded}
+        onKeyDown={onDropdownKeyDown}
+      >
+        <div className="iconDropdownHeader">
+          <div>
+            <strong>Ostale ikone</strong>
+            <small>Trening, obaveze, dom, pas i ostalo</small>
           </div>
+          <ChevronDown className="iconDropdownChevron" size={20} strokeWidth={2.8} />
         </div>
-      ))}
+
+        {expanded && (
+          <div className="iconDropdownContent" onClick={(event) => event.stopPropagation()}>
+            {extraGroups.map(renderGroup)}
+          </div>
+        )}
+      </div>
     </section>
   );
 }
