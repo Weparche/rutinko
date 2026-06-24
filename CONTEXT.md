@@ -60,6 +60,10 @@ _Avoid_: event, reminder, notification
 The main product surface showing the current day's active tasks, progress and next focus.
 _Avoid_: dashboard, calendar, timeline
 
+**No Calendar MVP**:
+The MVP boundary where Rutinko has no calendar view, date picker or date-based overview; it stays focused on what matters today.
+_Avoid_: calendar, date overview, date picker, month view, agenda
+
 **Next Focus**:
 The single unresolved task Rutinko surfaces next, based on time, snooze state and today's status rather than manual priority levels.
 _Avoid_: urgent flag, priority, Eisenhower matrix
