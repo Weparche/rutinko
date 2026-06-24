@@ -46,7 +46,7 @@ export const ICON_GROUPS = [
       { value: '🍳', label: 'Doručak', Icon: Utensils },
       { value: '💧', label: 'Voda', Icon: Droplet },
       { value: '💊', label: 'Tablete', Icon: Pill },
-      { value: '🧼', label: 'Higijena', Icon: Sparkles }
+      { value: '🚶', label: 'Šetnja', Icon: Footprints }
     ]
   },
   {
@@ -116,6 +116,8 @@ export const ICON_GROUPS = [
 
 const FLAT_ICONS = ICON_GROUPS.flatMap((group) => group.items);
 const BASIC_GROUP_ID = 'osnovno';
+const CATEGORY_GROUP_IDS = ['trening', 'obaveze', 'dom', 'pas'];
+const OTHER_GROUP_ID = 'ostalo';
 
 export function findIconMeta(value, title = '') {
   const text = `${value || ''} ${title || ''}`.toLowerCase();
@@ -131,20 +133,18 @@ export function IconVisual({ value, title = '' }) {
 
 export default function IconPicker({ value, onChange }) {
   const basicGroup = ICON_GROUPS.find((group) => group.id === BASIC_GROUP_ID) || ICON_GROUPS[0];
-  const extraGroups = ICON_GROUPS.filter((group) => group.id !== basicGroup.id);
-  const selectedIsBasic = basicGroup.items.some((item) => item.value === value);
-  const [expanded, setExpanded] = React.useState(() => !selectedIsBasic);
+  const categoryGroups = ICON_GROUPS.filter((group) => CATEGORY_GROUP_IDS.includes(group.id));
+  const otherGroup = ICON_GROUPS.find((group) => group.id === OTHER_GROUP_ID);
+  const [categoriesExpanded, setCategoriesExpanded] = React.useState(false);
+  const [otherExpanded, setOtherExpanded] = React.useState(false);
 
-  React.useEffect(() => {
-    if (!selectedIsBasic) setExpanded(true);
-  }, [selectedIsBasic]);
+  const toggleCategories = () => setCategoriesExpanded((current) => !current);
+  const toggleOther = () => setOtherExpanded((current) => !current);
 
-  const toggleExpanded = () => setExpanded((current) => !current);
-
-  const onDropdownKeyDown = (event) => {
+  const onDropdownKeyDown = (event, toggle) => {
     if (event.key !== 'Enter' && event.key !== ' ') return;
     event.preventDefault();
-    toggleExpanded();
+    toggle();
   };
 
   const renderGroup = (group) => (
@@ -176,32 +176,50 @@ export default function IconPicker({ value, onChange }) {
     </div>
   );
 
+  const renderDropdown = ({ title, subtitle, expanded, onToggle, children }) => (
+    <div
+      className={`iconDropdown ${expanded ? 'expanded' : ''}`}
+      role="button"
+      tabIndex={0}
+      aria-expanded={expanded}
+      onClick={onToggle}
+      onKeyDown={(event) => onDropdownKeyDown(event, onToggle)}
+    >
+      <div className="iconDropdownHeader">
+        <div>
+          <strong>{title}</strong>
+          <small>{subtitle}</small>
+        </div>
+        <ChevronDown className="iconDropdownChevron" size={20} strokeWidth={2.8} />
+      </div>
+
+      {expanded && (
+        <div className="iconDropdownContent" onClick={(event) => event.stopPropagation()}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <section className="premiumIconPicker" aria-label="Odabir ikone">
       {renderGroup(basicGroup)}
 
-      <div
-        className={`iconDropdown ${expanded ? 'expanded' : ''}`}
-        role="button"
-        tabIndex={0}
-        aria-expanded={expanded}
-        onClick={toggleExpanded}
-        onKeyDown={onDropdownKeyDown}
-      >
-        <div className="iconDropdownHeader">
-          <div>
-            <strong>Ostale ikone</strong>
-            <small>Trening, obaveze, dom, pas i ostalo</small>
-          </div>
-          <ChevronDown className="iconDropdownChevron" size={20} strokeWidth={2.8} />
-        </div>
+      {renderDropdown({
+        title: 'Kategorije',
+        subtitle: 'Trening, obaveze, dom i pas',
+        expanded: categoriesExpanded,
+        onToggle: toggleCategories,
+        children: categoryGroups.map(renderGroup)
+      })}
 
-        {expanded && (
-          <div className="iconDropdownContent" onClick={(event) => event.stopPropagation()}>
-            {extraGroups.map(renderGroup)}
-          </div>
-        )}
-      </div>
+      {otherGroup && renderDropdown({
+        title: 'Ostale ikone',
+        subtitle: 'Ostalo',
+        expanded: otherExpanded,
+        onToggle: toggleOther,
+        children: renderGroup(otherGroup)
+      })}
     </section>
   );
 }
