@@ -24,7 +24,7 @@ import IconPicker, { IconVisual } from './IconPicker.jsx';
 import { CATEGORY_OPTIONS, DEFAULT_SETTINGS, REPEAT_OPTIONS, ROUTINES, categoryLabel, repeatLabel } from './data.js';
 import { createTask, currentWeekDates, dateKey, dayPart, dueTime, isQuietTime, occurrenceId, occursOn, taskStatus } from './utils.js';
 
-const STORAGE_KEY = 'rutinko-impeccable-polish-v4';
+const STORAGE_KEY = 'rutinko-impeccable-polish-v5';
 const LOGO = '/brand/rutinko-logo.webp';
 
 function getInitialState() {
@@ -70,7 +70,6 @@ function App() {
       .sort((a, b) => a.time.localeCompare(b.time));
   }, [state.tasks]);
 
-  const doneCount = todayTasks.filter((task) => isTaskDone(task)).length;
   const resolvedCount = todayTasks.filter((task) => isResolved(task)).length;
   const openTasks = todayTasks
     .filter((task) => !isResolved(task))
@@ -151,6 +150,7 @@ function App() {
   function statusFor(task) {
     const occ = occurrenceId(task);
     const snoozeUntil = Number(state.snoozedUntil[occ] || 0);
+    if (task.active === false) return { label: 'pauzirana rutina', tone: 'paused' };
     if (isTaskSkipped(task)) return { label: 'preskočeno', tone: 'skipped' };
     if (snoozeUntil && Date.now() < snoozeUntil) return { label: `odgođeno do ${formatClock(snoozeUntil)}`, tone: 'snoozed' };
     return taskStatus(task, isTaskDone(task));
@@ -242,7 +242,7 @@ function App() {
   }
 
   function editTask(task) {
-    setEditingTask({ ...task });
+    setEditingTask({ active: true, ...task });
   }
 
   function saveEditedTask() {
@@ -252,7 +252,7 @@ function App() {
       tasks: previous.tasks.map((task) => task.id === editingTask.id ? { ...task, ...editingTask } : task)
     }));
     setEditingTask(null);
-    showToast('Zadatak ažuriran.');
+    showToast(editingTask.active === false ? 'Rutina je pauzirana.' : 'Zadatak ažuriran.');
   }
 
   function resetToday() {
@@ -363,9 +363,9 @@ function App() {
 
   return <div className="appShell">
     <Header tab={tab} setTab={setTab} onNotify={requestNotifications} onInstall={installApp} canInstall={!isInstalled && Boolean(installPrompt)} isInstalled={isInstalled} remindersEnabled={state.settings.remindersEnabled} />
-    {tab === 'today' && <TodayScreen tasks={todayTasks} groups={groups} nextTask={nextTask} doneCount={doneCount} resolvedCount={resolvedCount} openCount={openTasks.length} progress={progress} exerciseToday={exerciseToday} exerciseWeek={exerciseWeek} isDone={isTaskDone} isSkipped={isTaskSkipped} isResolved={isResolved} statusFor={statusFor} onDone={completeTask} onUndo={undoTask} onSnooze={snoozeTask} onSkip={skipTask} onDelete={deleteTask} onEdit={editTask} onNewDay={() => setNewDayOpen(true)} settings={state.settings} setTab={setTab} />}
+    {tab === 'today' && <TodayScreen tasks={todayTasks} groups={groups} nextTask={nextTask} resolvedCount={resolvedCount} openCount={openTasks.length} progress={progress} exerciseToday={exerciseToday} exerciseWeek={exerciseWeek} isDone={isTaskDone} isSkipped={isTaskSkipped} isResolved={isResolved} statusFor={statusFor} onDone={completeTask} onUndo={undoTask} onSnooze={snoozeTask} onSkip={skipTask} onDelete={deleteTask} onEdit={editTask} onNewDay={() => setNewDayOpen(true)} settings={state.settings} setTab={setTab} />}
     {tab === 'add' && <AddScreen form={form} setForm={setForm} selectedRoutine={selectedRoutine} pickRoutine={pickRoutine} saveTask={saveTask} />}
-    {tab === 'routines' && <RoutinesScreen addRoutine={addRoutine} />}
+    {tab === 'routines' && <RoutinesScreen addRoutine={addRoutine} tasks={state.tasks} onEdit={editTask} />}
     {tab === 'settings' && <SettingsScreen settings={state.settings} setSettings={(settings) => setState((previous) => ({ ...previous, settings }))} resetApp={resetApp} showToast={showToast} />}
     <FooterNav tab={tab} setTab={setTab} />
     {newDayOpen && <NewDayDialog onCancel={() => setNewDayOpen(false)} onConfirm={resetToday} />}
@@ -459,8 +459,13 @@ function Field({ label, icon, children }) {
   return <label className="field"><span>{icon}</span><div><small>{label}</small>{children}</div></label>;
 }
 
-function RoutinesScreen({ addRoutine }) {
-  return <><section className="routineHero"><div><span>Programi</span><h1>{ROUTINES.length} rutina</h1><p>Osnovno, trening i obaveze u jednom tapu.</p></div><img src={LOGO} alt="Rutinko" /></section><section className="routineList">{ROUTINES.map((routine, index) => <article className="routineCard" key={`${routine.title}-${index}`}><TaskGlyph task={routine} className="routineIcon" /><div><h3>{routine.title}</h3><p>{routine.time} · {repeatLabel[routine.repeat]}</p></div><button onClick={() => addRoutine(routine)}>Dodaj</button></article>)}</section></>;
+function RoutinesScreen({ addRoutine, tasks, onEdit }) {
+  const ownTasks = tasks.slice().sort((a, b) => Number(a.active === false) - Number(b.active === false) || a.time.localeCompare(b.time));
+  return <>
+    <section className="routineHero"><div><span>Programi</span><h1>{ROUTINES.length} rutina</h1><p>Osnovno, trening i obaveze u jednom tapu.</p></div><img src={LOGO} alt="Rutinko" /></section>
+    <section className="routineList">{ROUTINES.map((routine, index) => <article className="routineCard" key={`${routine.title}-${index}`}><TaskGlyph task={routine} className="routineIcon" /><div><h3>{routine.title}</h3><p>{routine.time} · {repeatLabel[routine.repeat]}</p></div><button onClick={() => addRoutine(routine)}>Dodaj</button></article>)}</section>
+    <section className="taskSection routineManager"><div className="sectionHeader"><h2>Moje rutine</h2><small>{ownTasks.length} rutina</small></div><div className="routineList">{ownTasks.map((task) => <article className={`routineCard ${task.active === false ? 'paused' : ''}`} key={task.id}><TaskGlyph task={task} className="routineIcon" /><div><h3>{task.title}</h3><p>{task.time} · {repeatLabel[task.repeat]} · {task.active === false ? 'pauzirana' : 'aktivna'}</p></div><button onClick={() => onEdit(task)}>Uredi</button></article>)}</div></section>
+  </>;
 }
 
 function SettingsScreen({ settings, setSettings, resetApp, showToast }) {
@@ -477,7 +482,7 @@ function NewDayDialog({ onCancel, onConfirm }) {
 }
 
 function EditTaskModal({ task, setTask, onSave, onDelete, onClose }) {
-  return <div className="modalBackdrop" role="dialog" aria-modal="true"><div className="editModal"><button className="modalClose" onClick={onClose}><X size={18} /></button><div className="creatorHero modalPreview"><TaskGlyph task={task} className="creatorIcon" /><div><span>Uredi zadatak</span><h1>{task.title || 'Zadatak'}</h1><p>{task.time} · {repeatLabel[task.repeat]} · {categoryLabel[task.category]}</p></div></div><div className="formPanel modalForm"><Field label="Naziv" icon="✎"><input value={task.title} onChange={(event) => setTask({ ...task, title: event.target.value })} /></Field><IconPicker value={task.icon} onChange={(icon) => setTask({ ...task, icon })} /><Field label="Vrijeme" icon="◷"><input type="time" value={task.time} onChange={(event) => setTask({ ...task, time: event.target.value })} /></Field><Field label="Ponavljanje" icon="↻"><select value={task.repeat} onChange={(event) => setTask({ ...task, repeat: event.target.value })}>{REPEAT_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><Field label="Kategorija" icon="◇"><select value={task.category} onChange={(event) => setTask({ ...task, category: event.target.value })}>{CATEGORY_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><button className="saveButton" onClick={onSave}><Check size={18} />Spremi izmjene</button><button className="resetButton" onClick={onDelete}><Trash2 size={18} />Izbriši zadatak</button></div></div></div>;
+  return <div className="modalBackdrop" role="dialog" aria-modal="true"><div className="editModal"><button className="modalClose" onClick={onClose}><X size={18} /></button><div className="creatorHero modalPreview"><TaskGlyph task={task} className="creatorIcon" /><div><span>Uredi zadatak</span><h1>{task.title || 'Zadatak'}</h1><p>{task.time} · {repeatLabel[task.repeat]} · {task.active === false ? 'pauzirana' : categoryLabel[task.category]}</p></div></div><div className="formPanel modalForm"><Setting title="Rutina aktivna" text={task.active === false ? 'Pauzirana rutina se ne prikazuje na Danas.' : 'Aktivna rutina se prikazuje kada dođe njezin dan.'}><button type="button" className={`switchButton ${task.active !== false ? 'on' : ''}`} onClick={() => setTask({ ...task, active: task.active === false })}><span>{task.active !== false ? 'ON' : 'OFF'}</span></button></Setting><Field label="Naziv" icon="✎"><input value={task.title} onChange={(event) => setTask({ ...task, title: event.target.value })} /></Field><IconPicker value={task.icon} onChange={(icon) => setTask({ ...task, icon })} /><Field label="Vrijeme" icon="◷"><input type="time" value={task.time} onChange={(event) => setTask({ ...task, time: event.target.value })} /></Field><Field label="Ponavljanje" icon="↻"><select value={task.repeat} onChange={(event) => setTask({ ...task, repeat: event.target.value })}>{REPEAT_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><Field label="Kategorija" icon="◇"><select value={task.category} onChange={(event) => setTask({ ...task, category: event.target.value })}>{CATEGORY_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><button className="saveButton" onClick={onSave}><Check size={18} />Spremi izmjene</button><button className="resetButton" onClick={onDelete}><Trash2 size={18} />Izbriši zadatak</button></div></div></div>;
 }
 
 function FooterNav({ tab, setTab }) {
