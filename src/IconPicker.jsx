@@ -4,13 +4,15 @@ import {
   Bed,
   Bell,
   BookOpen,
-  BriefcaseBusiness,
+  Briefcase,
   CalendarDays,
   Car,
   CheckCircle2,
   ChevronDown,
   ClipboardList,
+  CreditCard,
   Dog,
+  Droplet,
   Dumbbell,
   Flame,
   Footprints,
@@ -19,7 +21,6 @@ import {
   Home,
   Laptop,
   Moon,
-  NotebookPen,
   Phone,
   Pill,
   ShoppingCart,
@@ -30,9 +31,6 @@ import {
   Target,
   Trash2,
   Trophy,
-  WalletCards,
-  Weight,
-  GlassWater,
   Utensils,
   FileText,
   Smile
@@ -46,7 +44,7 @@ export const ICON_GROUPS = [
       { value: '🪥', label: 'Zubi', Icon: Sparkles },
       { value: '🚿', label: 'Tuš', Icon: ShowerHead },
       { value: '🍳', label: 'Doručak', Icon: Utensils },
-      { value: '💧', label: 'Voda', Icon: GlassWater },
+      { value: '💧', label: 'Voda', Icon: Droplet },
       { value: '💊', label: 'Tablete', Icon: Pill },
       { value: '🧼', label: 'Higijena', Icon: Sparkles }
     ]
@@ -56,7 +54,7 @@ export const ICON_GROUPS = [
     title: 'Trening',
     items: [
       { value: '💪', label: 'Trening', Icon: Dumbbell },
-      { value: '🏋️', label: 'Snaga', Icon: Weight },
+      { value: '🏋️', label: 'Snaga', Icon: Dumbbell },
       { value: '🚶', label: 'Šetnja', Icon: Footprints },
       { value: '❤️', label: 'Puls', Icon: HeartPulse },
       { value: '🎯', label: 'Cilj', Icon: Target },
@@ -68,7 +66,7 @@ export const ICON_GROUPS = [
     title: 'Obaveze',
     items: [
       { value: '📄', label: 'Dokument', Icon: FileText },
-      { value: '💶', label: 'Račun', Icon: WalletCards },
+      { value: '💶', label: 'Račun', Icon: CreditCard },
       { value: '🚗', label: 'Auto', Icon: Car },
       { value: '☎️', label: 'Poziv', Icon: Phone },
       { value: '🗑️', label: 'Smeće', Icon: Trash2 },
@@ -103,7 +101,7 @@ export const ICON_GROUPS = [
     items: [
       { value: '⭐', label: 'Bitno', Icon: CheckCircle2 },
       { value: '⏰', label: 'Podsjetnik', Icon: Bell },
-      { value: '📝', label: 'Bilješka', Icon: NotebookPen },
+      { value: '📝', label: 'Bilješka', Icon: FileText },
       { value: '🧠', label: 'Fokus', Icon: ClipboardList },
       { value: '☀️', label: 'Jutro', Icon: Sun },
       { value: '🌙', label: 'Večer', Icon: Moon },
@@ -111,7 +109,7 @@ export const ICON_GROUPS = [
       { value: '🍎', label: 'Hrana', Icon: Apple },
       { value: '🥗', label: 'Zdravo', Icon: HeartPulse },
       { value: '🩺', label: 'Doktor', Icon: Stethoscope },
-      { value: '💼', label: 'Posao', Icon: BriefcaseBusiness }
+      { value: '💼', label: 'Posao', Icon: Briefcase }
     ]
   }
 ];
