@@ -6,7 +6,7 @@ This pass applies the Rutinko `PRODUCT.md` and `DESIGN.md` context as a practica
 
 ### Product shape
 
-The Today screen is now structured around one clear decision path:
+The Today screen is structured around one clear decision path:
 
 1. Daily score hero
 2. Next focus task
@@ -17,16 +17,16 @@ This avoids a flat todo-list feel and makes the product feel closer to a premium
 
 ### UX hierarchy
 
-The app now prioritizes:
+The app prioritizes:
 
 - current daily score
 - next task to complete
-- Done / Snooze / 5 min actions
+- Done / Snooze / Preskoči actions
 - task groups after the main focus
 
 ### Visual system
 
-The UI now uses:
+The UI uses:
 
 - dark navy daily score hero
 - lime primary action
@@ -35,10 +35,12 @@ The UI now uses:
 - strong typography hierarchy
 - cleaner app footer navigation
 - larger tap targets
+- premium categorized icon picker
+- local Lottie moments for score, dog walk, done state and new day confirmation
 
 ### Typography
 
-The app now uses Manrope for a more premium mobile-product feel instead of a generic system/Inter-like default.
+The app uses Manrope for a more premium mobile-product feel instead of a generic system/Inter-like default.
 
 ### Logo usage
 
@@ -60,6 +62,8 @@ The WebP Rutinko logo is used as a brand asset:
 - Icon picker
 - Routine cards
 - Settings form
+- New day confirmation
+- Edit task modal
 - Footer navigation
 
 ## Impeccable commands to run locally
@@ -94,4 +98,4 @@ Then use:
 - No subscriptions
 - No heavy gamification
 - Croatian UI preserved
-- Core loop preserved: Done / Snooze / Remind in 5 min
+- Core loop preserved: Done / Snooze / Preskoči
