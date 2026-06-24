@@ -20,6 +20,10 @@ _Avoid_: event, reminder, notification
 The main product surface showing the current day's active tasks, progress and next focus.
 _Avoid_: dashboard, calendar, timeline
 
+**Next Focus**:
+The single unresolved task Rutinko surfaces next, based on time, snooze state and today's status rather than manual priority levels.
+_Avoid_: urgent flag, priority, Eisenhower matrix
+
 **Resolved**:
 The state of a task after it is either finished or skipped for the current day.
 _Avoid_: archived, completed-only
