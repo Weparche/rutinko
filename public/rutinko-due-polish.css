@@ -1,0 +1,110 @@
+.focusHeader small.dueMetaFormatted {
+  top: 38px !important;
+  right: 12px !important;
+  max-width: 150px !important;
+  min-height: 40px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  padding: 6px 9px !important;
+  background: rgba(18,104,255,.08) !important;
+  text-align: right !important;
+  white-space: nowrap !important;
+}
+
+.dueTimeLine {
+  display: block;
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 1000;
+  letter-spacing: -.02em;
+}
+
+.dueRemainingLine {
+  display: block;
+  color: var(--blue);
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.taskCard {
+  padding-right: 104px !important;
+}
+
+.taskMeta {
+  padding-right: 0 !important;
+}
+
+.taskMeta p.taskStatusOnly {
+  max-width: 150px;
+}
+
+.taskDueMeta {
+  position: absolute;
+  top: 38px;
+  right: 10px;
+  z-index: 3;
+  width: 92px;
+  min-height: 38px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+  padding: 5px 8px;
+  border-radius: 15px;
+  background: rgba(18,104,255,.07);
+  box-shadow: inset 0 0 0 1px rgba(18,104,255,.10);
+  text-align: right;
+  pointer-events: none;
+}
+
+.taskDueMeta .dueTimeLine {
+  font-size: 11px;
+}
+
+.taskDueMeta .dueRemainingLine {
+  font-size: 9px;
+}
+
+.taskCard.done .taskDueMeta {
+  background: rgba(25,210,143,.10);
+  box-shadow: inset 0 0 0 1px rgba(25,210,143,.12);
+}
+
+.taskCard.done .taskDueMeta .dueRemainingLine {
+  color: var(--mint);
+}
+
+.taskCard.skipped .taskDueMeta {
+  background: rgba(100,112,131,.10);
+  box-shadow: inset 0 0 0 1px rgba(100,112,131,.12);
+}
+
+.taskCard.skipped .taskDueMeta .dueRemainingLine {
+  color: var(--muted);
+}
+
+@media (max-width: 430px) {
+  .focusHeader small.dueMetaFormatted {
+    display: flex !important;
+    top: 38px !important;
+    right: 10px !important;
+    max-width: 142px !important;
+  }
+
+  .taskCard {
+    padding-right: 104px !important;
+  }
+
+  .taskDueMeta {
+    top: 38px;
+    right: 8px;
+    width: 90px;
+  }
+}
