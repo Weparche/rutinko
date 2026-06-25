@@ -115,9 +115,6 @@ export const ICON_GROUPS = [
 ];
 
 const FLAT_ICONS = ICON_GROUPS.flatMap((group) => group.items);
-const BASIC_GROUP_ID = 'osnovno';
-const CATEGORY_GROUP_IDS = ['trening', 'obaveze', 'dom', 'pas'];
-const OTHER_GROUP_ID = 'ostalo';
 
 export function findIconMeta(value, title = '') {
   const text = `${value || ''} ${title || ''}`.toLowerCase();
@@ -132,9 +129,6 @@ export function IconVisual({ value, title = '' }) {
 }
 
 export default function IconPicker({ value, onChange }) {
-  const basicGroup = ICON_GROUPS.find((group) => group.id === BASIC_GROUP_ID) || ICON_GROUPS[0];
-  const categoryGroups = ICON_GROUPS.filter((group) => CATEGORY_GROUP_IDS.includes(group.id));
-  const otherGroup = ICON_GROUPS.find((group) => group.id === OTHER_GROUP_ID);
   const [openGroupId, setOpenGroupId] = React.useState(null);
 
   const toggleGroup = (groupId) => setOpenGroupId((current) => current === groupId ? null : groupId);
@@ -151,7 +145,7 @@ export default function IconPicker({ value, onChange }) {
   };
 
   const renderGroup = (group) => (
-    <div className={`iconGroup ${group.id === BASIC_GROUP_ID ? 'basicGroup' : ''}`} key={group.id}>
+    <div className="iconGroup" key={group.id}>
       <div className="iconGroupTitle">{group.title}</div>
       <div className="premiumIconGrid">
         {group.items.map((item) => {
@@ -210,11 +204,7 @@ export default function IconPicker({ value, onChange }) {
 
   return (
     <section className="premiumIconPicker" aria-label="Odabir ikone">
-      {renderGroup(basicGroup)}
-
-      {categoryGroups.map(renderDropdown)}
-
-      {otherGroup && renderDropdown(otherGroup)}
+      {ICON_GROUPS.map(renderDropdown)}
     </section>
   );
 }
