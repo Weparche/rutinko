@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rutinko-deploy-2026-06-26-v1';
+const CACHE_NAME = 'rutinko-deploy-2026-06-26-v2';
 const ASSETS = [
   '/',
   '/manifest.webmanifest',
