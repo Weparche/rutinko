@@ -1,8 +1,10 @@
-const CACHE_NAME = 'rutinko-deploy-2026-06-26-v2';
+const CACHE_NAME = 'rutinko-deploy-2026-06-26-v3';
 const ASSETS = [
   '/',
   '/manifest.webmanifest',
   '/rutinko-final-polish.css',
+  '/rutinko-due-polish.css',
+  '/rutinko-time-polish.js',
   '/brand/rutinko-logo.webp',
   '/icons/icon-192.svg',
   '/icons/icon-512.svg'
