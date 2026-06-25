@@ -1,5 +1,12 @@
-const CACHE_NAME = 'rutinko-react-remaster-v2';
-const ASSETS = ['/', '/manifest.webmanifest', '/brand/rutinko-logo.webp', '/icons/icon-192.svg', '/icons/icon-512.svg'];
+const CACHE_NAME = 'rutinko-deploy-2026-06-26-v1';
+const ASSETS = [
+  '/',
+  '/manifest.webmanifest',
+  '/rutinko-final-polish.css',
+  '/brand/rutinko-logo.webp',
+  '/icons/icon-192.svg',
+  '/icons/icon-512.svg'
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
