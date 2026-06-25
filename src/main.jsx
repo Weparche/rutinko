@@ -28,6 +28,11 @@ import { createTask, currentWeekDates, dateKey, dayPart, dueTime, isQuietTime, o
 const STORAGE_KEY = 'rutinko-impeccable-polish-v5';
 const LOGO = '/brand/rutinko-logo.webp';
 const WATER_TIMES = ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
+const TIME_OPTIONS = Array.from({ length: 96 }, (_, index) => {
+  const hour = Math.floor(index / 4);
+  const minute = (index % 4) * 15;
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+});
 const SECTION_META = {
   Jutro: { icon: '☀️', tone: 'morning' },
   Dan: { icon: '🌤️', tone: 'day' },
@@ -127,6 +132,7 @@ function App() {
   const [isInstalled, setIsInstalled] = useState(() => window.matchMedia?.('(display-mode: standalone)').matches || window.navigator.standalone === true);
   const [newDayOpen, setNewDayOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [doneOpenSignal, setDoneOpenSignal] = useState(0);
 
   const todayTasks = useMemo(() => {
     return state.tasks
@@ -242,6 +248,7 @@ function App() {
       delete skipped[occ];
       return { ...previous, done: { ...previous.done, [occ]: Date.now() }, skipped, snoozedUntil };
     });
+    setDoneOpenSignal(Date.now());
   }
 
   function skipTask(id, key = dateKey()) {
@@ -439,7 +446,7 @@ function App() {
 
   return <div className="appShell">
     <Header tab={tab} setTab={setTab} onNotify={requestNotifications} onInstall={installApp} canInstall={!isInstalled && Boolean(installPrompt)} isInstalled={isInstalled} remindersEnabled={state.settings.remindersEnabled} />
-    {tab === 'today' && <TodayScreen tasks={todayTasks} groups={groups} nextTask={nextTask} resolvedCount={resolvedCount} openCount={openTasks.length} progress={progress} exerciseToday={exerciseToday} exerciseWeek={exerciseWeek} isDone={isTaskDone} isSkipped={isTaskSkipped} isResolved={isResolved} statusFor={statusFor} onDone={completeTask} onUndo={undoTask} onSnooze={snoozeTask} onSkip={skipTask} onDelete={deleteTask} onEdit={editTask} onNewDay={() => setNewDayOpen(true)} settings={state.settings} setTab={setTab} />}
+    {tab === 'today' && <TodayScreen tasks={todayTasks} groups={groups} nextTask={nextTask} doneOpenSignal={doneOpenSignal} resolvedCount={resolvedCount} openCount={openTasks.length} progress={progress} exerciseToday={exerciseToday} exerciseWeek={exerciseWeek} isDone={isTaskDone} isSkipped={isTaskSkipped} isResolved={isResolved} statusFor={statusFor} onDone={completeTask} onUndo={undoTask} onSnooze={snoozeTask} onSkip={skipTask} onDelete={deleteTask} onEdit={editTask} onNewDay={() => setNewDayOpen(true)} settings={state.settings} setTab={setTab} />}
     {tab === 'add' && <AddScreen form={form} setForm={setForm} selectedRoutine={selectedRoutine} pickRoutine={pickRoutine} saveTask={saveTask} />}
     {tab === 'routines' && <RoutinesScreen addRoutine={addRoutine} addDayTemplate={addDayTemplate} tasks={state.tasks} onEdit={editTask} />}
     {tab === 'settings' && <SettingsScreen settings={state.settings} setSettings={(settings) => setState((previous) => ({ ...previous, settings }))} resetApp={resetApp} showToast={showToast} />}
@@ -478,7 +485,7 @@ function TodayScreen(props) {
     <TaskSection {...props} title="Dan" tasks={props.groups.day} icon="🌤️" defaultCollapsed />
     <TaskSection {...props} title="Večer" tasks={props.groups.evening} icon="🌙" defaultCollapsed />
     <TaskSection {...props} title="Jednokratno" tasks={props.groups.once} icon="📌" defaultCollapsed />
-    <TaskSection {...props} title="Gotovo" tasks={props.tasks.filter(props.isResolved)} icon="✅" defaultCollapsed completed />
+    <TaskSection {...props} title="Gotovo" tasks={props.tasks.filter(props.isResolved)} icon="✅" defaultCollapsed completed openSignal={props.doneOpenSignal} />
   </>;
 }
 
@@ -502,8 +509,11 @@ function AllDoneCard({ setTab, hasTasks }) {
   return <section className="allDoneCard"><AnimatedMoment name="doneCheck" className="doneAnimation" loop={false} /><div><h2>{hasTasks ? 'Sve bitno je riješeno.' : 'Danas je prazan.'}</h2><p>{hasTasks ? 'Dodaj novu rutinu samo ako stvarno treba.' : 'Odaberi rutine iz prijedloga i kreni čisto.'}</p></div><button onClick={() => setTab('add')}>{hasTasks ? 'Dodaj' : 'Prijedlozi'}</button></section>;
 }
 
-function TaskSection({ title, tasks, icon, isResolved, isSkipped, statusFor, onDone, onUndo, onSnooze, onSkip, onDelete, onEdit, settings, defaultCollapsed = true }) {
+function TaskSection({ title, tasks, icon, isResolved, isSkipped, statusFor, onDone, onUndo, onSnooze, onSkip, onDelete, onEdit, settings, defaultCollapsed = true, openSignal = 0 }) {
   const [open, setOpen] = useState(!defaultCollapsed);
+  useEffect(() => {
+    if (openSignal) setOpen(true);
+  }, [openSignal]);
   if (!tasks.length) return null;
   const rightLabel = title === 'Gotovo' ? `${tasks.length} riješeno` : `${tasks.length} rutina`;
   const meta = SECTION_META[title] || { icon, tone: 'default' };
@@ -537,12 +547,16 @@ function AddScreen({ form, setForm, selectedRoutine, pickRoutine, saveTask }) {
   return <>
     <section className="creatorHero"><TaskGlyph task={form} className="creatorIcon" /><div><span>Dodavanje rutine</span><h1>{form.title || 'Nova rutina'}</h1><p>{isWaterRoutine ? `${formatRangeLabel('08:00', '22:00')} · svakih 2 h` : `${formatTimeLabel(form.time)} · ${repeatLabel[form.repeat]} · ${categoryLabel[form.category]}`}</p></div></section>
     <section className="presetBlock"><div className="sectionHeader compact"><h2>Brzo iz rutina</h2><small>{ROUTINES.length} rutina</small></div><div className="chips">{ROUTINES.map((routine, index) => <button key={`${routine.title}-${index}`} className={index === selectedRoutine ? 'chip active' : 'chip'} onClick={() => pickRoutine(index)}><TaskGlyph task={routine} className="chipIcon" /><span>{routine.title}</span></button>)}</div></section>
-    <section className="formPanel"><IconPicker value={form.icon} onChange={handleIconChange} /><Field label="Naziv" icon="✎"><input value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} /></Field>{isWaterRoutine ? <Field label="Raspored" icon="💧"><div className="fieldText">{formatRangeLabel('08:00', '22:00')} · podsjetnik svaka 2 h</div></Field> : <Field label="Vrijeme" icon="🕘"><input type="time" lang="hr-HR" step="60" value={form.time} onChange={(event) => setForm({ ...form, time: event.target.value })} /></Field>}{!isWaterRoutine && <Field label="Ponavljanje" icon="🔁"><select value={form.repeat} onChange={(event) => setForm({ ...form, repeat: event.target.value })}>{REPEAT_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field>}<Field label="Kategorija" icon="🏷️"><select value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })}>{CATEGORY_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><button className="saveButton" onClick={saveTask}><Check size={18} />Spremi rutinu</button></section>
+    <section className="formPanel"><IconPicker value={form.icon} onChange={handleIconChange} /><Field label="Naziv" icon="✎"><input value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} /></Field>{isWaterRoutine ? <Field label="Raspored" icon="💧"><div className="fieldText">{formatRangeLabel('08:00', '22:00')} · podsjetnik svaka 2 h</div></Field> : <Field label="Vrijeme" icon="🕘"><TimeSelect value={form.time} onChange={(time) => setForm({ ...form, time })} /></Field>}{!isWaterRoutine && <Field label="Ponavljanje" icon="🔁"><select value={form.repeat} onChange={(event) => setForm({ ...form, repeat: event.target.value })}>{REPEAT_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field>}<Field label="Kategorija" icon="🏷️"><select value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })}>{CATEGORY_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><button className="saveButton" onClick={saveTask}><Check size={18} />Spremi rutinu</button></section>
   </>;
 }
 
 function Field({ label, icon, children }) {
   return <label className="field"><span>{icon}</span><div><small>{label}</small>{children}</div></label>;
+}
+
+function TimeSelect({ value, onChange }) {
+  return <select className="timeSelect24" value={value} onChange={(event) => onChange(event.target.value)}>{TIME_OPTIONS.map((time) => <option key={time} value={time}>{formatTimeLabel(time)}</option>)}</select>;
 }
 
 function RoutinesScreen({ addRoutine, addDayTemplate, tasks, onEdit }) {
@@ -570,7 +584,7 @@ function RoutinesScreen({ addRoutine, addDayTemplate, tasks, onEdit }) {
 
 function SettingsScreen({ settings, setSettings, resetApp, showToast }) {
   const update = (key, value) => setSettings({ ...settings, [key]: value });
-  return <section className="formPanel"><Setting title="Podsjetnici" text={settings.remindersEnabled ? 'Rutinko šalje podsjetnike kad browser ima dozvolu.' : 'Podsjetnici su ugašeni unutar Rutinka.'}><button type="button" className={`switchButton ${settings.remindersEnabled ? 'on' : ''}`} onClick={() => update('remindersEnabled', !settings.remindersEnabled)}><span>{settings.remindersEnabled ? 'ON' : 'OFF'}</span></button></Setting><Setting title="Ponavljaj podsjetnik" text="Kad ništa ne stisneš."><div className="numberWithUnit"><input type="number" min="1" max="60" value={settings.reminderIntervalMinutes} onChange={(event) => update('reminderIntervalMinutes', Number(event.target.value))} /><span>min</span></div></Setting><Setting title="Odgoda" text="Brzi gumb za odgodu."><div className="numberWithUnit"><input type="number" min="5" max="240" value={settings.snoozeMinutes} onChange={(event) => update('snoozeMinutes', Number(event.target.value))} /><span>min</span></div></Setting><Setting title="Tišina od" text="Ne gnjavi dok spavaš."><input type="time" lang="hr-HR" step="60" value={settings.quietStart} onChange={(event) => update('quietStart', event.target.value)} /></Setting><Setting title="Tišina do" text="Podsjetnici se nastavljaju poslije."><input type="time" lang="hr-HR" step="60" value={settings.quietEnd} onChange={(event) => update('quietEnd', event.target.value)} /></Setting><button className="saveButton" onClick={() => showToast('Postavke spremljene.')}><Check size={18} />Spremi postavke</button><button className="resetButton" onClick={resetApp}><Trash2 size={18} />Obriši lokalne podatke</button></section>;
+  return <section className="formPanel"><Setting title="Podsjetnici" text={settings.remindersEnabled ? 'Rutinko šalje podsjetnike kad browser ima dozvolu.' : 'Podsjetnici su ugašeni unutar Rutinka.'}><button type="button" className={`switchButton ${settings.remindersEnabled ? 'on' : ''}`} onClick={() => update('remindersEnabled', !settings.remindersEnabled)}><span>{settings.remindersEnabled ? 'ON' : 'OFF'}</span></button></Setting><Setting title="Ponavljaj podsjetnik" text="Kad ništa ne stisneš."><div className="numberWithUnit"><input type="number" min="1" max="60" value={settings.reminderIntervalMinutes} onChange={(event) => update('reminderIntervalMinutes', Number(event.target.value))} /><span>min</span></div></Setting><Setting title="Odgoda" text="Brzi gumb za odgodu."><div className="numberWithUnit"><input type="number" min="5" max="240" value={settings.snoozeMinutes} onChange={(event) => update('snoozeMinutes', Number(event.target.value))} /><span>min</span></div></Setting><Setting title="Tišina od" text="Ne gnjavi dok spavaš."><TimeSelect value={settings.quietStart} onChange={(time) => update('quietStart', time)} /></Setting><Setting title="Tišina do" text="Podsjetnici se nastavljaju poslije."><TimeSelect value={settings.quietEnd} onChange={(time) => update('quietEnd', time)} /></Setting><button className="saveButton" onClick={() => showToast('Postavke spremljene.')}><Check size={18} />Spremi postavke</button><button className="resetButton" onClick={resetApp}><Trash2 size={18} />Obriši lokalne podatke</button></section>;
 }
 
 function Setting({ title, text, children }) {
@@ -584,7 +598,7 @@ function NewDayDialog({ onCancel, onConfirm }) {
 function EditTaskModal({ task, setTask, onSave, onDelete, onClose }) {
   const isWaterRoutine = task.scheduleType === 'water-2h';
   const handleIconChange = (icon, meta) => setTask(applyIconChoice(task, icon, meta));
-  return <div className="modalBackdrop" role="dialog" aria-modal="true"><div className="editModal"><button className="modalClose" onClick={onClose}><X size={18} /></button><div className="creatorHero modalPreview"><TaskGlyph task={task} className="creatorIcon" /><div><span>Uredi rutinu</span><h1>{task.title || 'Rutina'}</h1><p>{isWaterRoutine ? `${formatRangeLabel('08:00', '22:00')} · svakih 2 h` : `${formatTimeLabel(task.time)} · ${repeatLabel[task.repeat]} · ${task.active === false ? 'pauzirana' : categoryLabel[task.category]}`}</p></div></div><div className="formPanel modalForm"><Setting title="Rutina aktivna" text={task.active === false ? 'Pauzirana rutina se ne prikazuje na Danas.' : 'Aktivna rutina se prikazuje kada dođe njezin dan.'}><button type="button" className={`switchButton ${task.active !== false ? 'on' : ''}`} onClick={() => setTask({ ...task, active: task.active === false })}><span>{task.active !== false ? 'ON' : 'OFF'}</span></button></Setting><IconPicker value={task.icon} onChange={handleIconChange} /><Field label="Naziv" icon="✎"><input value={task.title} onChange={(event) => setTask({ ...task, title: event.target.value })} /></Field>{isWaterRoutine ? <Field label="Raspored" icon="💧"><div className="fieldText">{formatRangeLabel('08:00', '22:00')} · podsjetnik svaka 2 h</div></Field> : <Field label="Vrijeme" icon="🕘"><input type="time" lang="hr-HR" step="60" value={task.time} onChange={(event) => setTask({ ...task, time: event.target.value })} /></Field>}{!isWaterRoutine && <Field label="Ponavljanje" icon="🔁"><select value={task.repeat} onChange={(event) => setTask({ ...task, repeat: event.target.value })}>{REPEAT_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field>}<Field label="Kategorija" icon="🏷️"><select value={task.category} onChange={(event) => setTask({ ...task, category: event.target.value })}>{CATEGORY_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><button className="saveButton" onClick={onSave}><Check size={18} />Spremi izmjene</button><button className="resetButton" onClick={onDelete}><Trash2 size={18} />Izbriši rutinu</button></div></div></div>;
+  return <div className="modalBackdrop" role="dialog" aria-modal="true"><div className="editModal"><button className="modalClose" onClick={onClose}><X size={18} /></button><div className="creatorHero modalPreview"><TaskGlyph task={task} className="creatorIcon" /><div><span>Uredi rutinu</span><h1>{task.title || 'Rutina'}</h1><p>{isWaterRoutine ? `${formatRangeLabel('08:00', '22:00')} · svakih 2 h` : `${formatTimeLabel(task.time)} · ${repeatLabel[task.repeat]} · ${task.active === false ? 'pauzirana' : categoryLabel[task.category]}`}</p></div></div><div className="formPanel modalForm"><Setting title="Rutina aktivna" text={task.active === false ? 'Pauzirana rutina se ne prikazuje na Danas.' : 'Aktivna rutina se prikazuje kada dođe njezin dan.'}><button type="button" className={`switchButton ${task.active !== false ? 'on' : ''}`} onClick={() => setTask({ ...task, active: task.active === false })}><span>{task.active !== false ? 'ON' : 'OFF'}</span></button></Setting><IconPicker value={task.icon} onChange={handleIconChange} /><Field label="Naziv" icon="✎"><input value={task.title} onChange={(event) => setTask({ ...task, title: event.target.value })} /></Field>{isWaterRoutine ? <Field label="Raspored" icon="💧"><div className="fieldText">{formatRangeLabel('08:00', '22:00')} · podsjetnik svaka 2 h</div></Field> : <Field label="Vrijeme" icon="🕘"><TimeSelect value={task.time} onChange={(time) => setTask({ ...task, time })} /></Field>}{!isWaterRoutine && <Field label="Ponavljanje" icon="🔁"><select value={task.repeat} onChange={(event) => setTask({ ...task, repeat: event.target.value })}>{REPEAT_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field>}<Field label="Kategorija" icon="🏷️"><select value={task.category} onChange={(event) => setTask({ ...task, category: event.target.value })}>{CATEGORY_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field><button className="saveButton" onClick={onSave}><Check size={18} />Spremi izmjene</button><button className="resetButton" onClick={onDelete}><Trash2 size={18} />Izbriši rutinu</button></div></div></div>;
 }
 
 function FooterNav({ tab, setTab }) {
