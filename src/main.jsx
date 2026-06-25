@@ -295,6 +295,13 @@ function App() {
     showToast(routine.scheduleType === 'water-2h' ? 'Voda dodana svakih 2 h od 08 do 22.' : 'Rutina dodana.');
   }
 
+  function addDayTemplate() {
+    const createdTasks = ROUTINES.flatMap(createRoutineTasks);
+    setState((previous) => ({ ...previous, tasks: [...previous.tasks, ...createdTasks] }));
+    setTab('today');
+    showToast('Predložak dana je dodan.');
+  }
+
   function editTask(task) {
     setEditingTask({ active: true, ...task });
   }
@@ -401,8 +408,7 @@ function App() {
   function groupTasks(tasks) {
     const result = { morning: [], day: [], evening: [], once: [] };
     tasks.forEach((task) => {
-      let group = dayPart(task.time);
-      if (task.repeat === 'once' && task.category === 'obaveza') group = 'once';
+      const group = task.repeat === 'once' ? 'once' : dayPart(task.time);
       result[group].push(task);
     });
     return result;
@@ -419,7 +425,7 @@ function App() {
     <Header tab={tab} setTab={setTab} onNotify={requestNotifications} onInstall={installApp} canInstall={!isInstalled && Boolean(installPrompt)} isInstalled={isInstalled} remindersEnabled={state.settings.remindersEnabled} />
     {tab === 'today' && <TodayScreen tasks={todayTasks} groups={groups} nextTask={nextTask} resolvedCount={resolvedCount} openCount={openTasks.length} progress={progress} exerciseToday={exerciseToday} exerciseWeek={exerciseWeek} isDone={isTaskDone} isSkipped={isTaskSkipped} isResolved={isResolved} statusFor={statusFor} onDone={completeTask} onUndo={undoTask} onSnooze={snoozeTask} onSkip={skipTask} onDelete={deleteTask} onEdit={editTask} onNewDay={() => setNewDayOpen(true)} settings={state.settings} setTab={setTab} />}
     {tab === 'add' && <AddScreen form={form} setForm={setForm} selectedRoutine={selectedRoutine} pickRoutine={pickRoutine} saveTask={saveTask} />}
-    {tab === 'routines' && <RoutinesScreen addRoutine={addRoutine} tasks={state.tasks} onEdit={editTask} />}
+    {tab === 'routines' && <RoutinesScreen addRoutine={addRoutine} addDayTemplate={addDayTemplate} tasks={state.tasks} onEdit={editTask} />}
     {tab === 'settings' && <SettingsScreen settings={state.settings} setSettings={(settings) => setState((previous) => ({ ...previous, settings }))} resetApp={resetApp} showToast={showToast} />}
     <FooterNav tab={tab} setTab={setTab} />
     {newDayOpen && <NewDayDialog onCancel={() => setNewDayOpen(false)} onConfirm={resetToday} />}
@@ -452,9 +458,9 @@ function TodayScreen(props) {
     </section>
     {props.nextTask ? <FocusCard task={props.nextTask} status={props.statusFor(props.nextTask)} onDone={props.onDone} onSnooze={props.onSnooze} onSkip={props.onSkip} onDelete={props.onDelete} onEdit={props.onEdit} settings={props.settings} /> : <AllDoneCard setTab={props.setTab} hasTasks={props.tasks.length > 0} />}
     <section className="actionDock"><button className="primaryCta" onClick={() => props.setTab('add')}><Plus size={18} /> Dodaj rutinu</button><button className="secondaryCta resetDayCta" onClick={props.onNewDay}><RefreshCcw size={18} /> Izradi novi dan</button></section>
-    <TaskSection title="Jutro" tasks={props.groups.morning} icon="☀️" {...props} />
-    <TaskSection title="Dan" tasks={props.groups.day} icon="🌤️" {...props} />
-    <TaskSection title="Večer" tasks={props.groups.evening} icon="🌙" {...props} />
+    <TaskSection title="Jutro" tasks={props.groups.morning} icon="☀️" defaultCollapsed {...props} />
+    <TaskSection title="Dan" tasks={props.groups.day} icon="🌤️" defaultCollapsed {...props} />
+    <TaskSection title="Večer" tasks={props.groups.evening} icon="🌙" defaultCollapsed {...props} />
     <TaskSection title="Jednokratno" tasks={props.groups.once} icon="📌" defaultCollapsed {...props} />
     <TaskSection title="Gotovo" tasks={props.tasks.filter(props.isResolved)} icon="✅" defaultCollapsed completed {...props} />
   </>;
@@ -480,7 +486,7 @@ function AllDoneCard({ setTab, hasTasks }) {
   return <section className="allDoneCard"><AnimatedMoment name="doneCheck" className="doneAnimation" loop={false} /><div><h2>{hasTasks ? 'Sve bitno je riješeno.' : 'Danas je prazan.'}</h2><p>{hasTasks ? 'Dodaj novu rutinu samo ako stvarno treba.' : 'Odaberi rutine iz prijedloga i kreni čisto.'}</p></div><button onClick={() => setTab('add')}>{hasTasks ? 'Dodaj' : 'Prijedlozi'}</button></section>;
 }
 
-function TaskSection({ title, tasks, icon, isResolved, isSkipped, statusFor, onDone, onUndo, onSnooze, onSkip, onDelete, onEdit, settings, defaultCollapsed = false }) {
+function TaskSection({ title, tasks, icon, isResolved, isSkipped, statusFor, onDone, onUndo, onSnooze, onSkip, onDelete, onEdit, settings, defaultCollapsed = true }) {
   const [open, setOpen] = useState(!defaultCollapsed);
   if (!tasks.length) return null;
   const rightLabel = title === 'Gotovo' ? `${tasks.length} riješeno` : `${tasks.length} rutina`;
@@ -523,11 +529,25 @@ function Field({ label, icon, children }) {
   return <label className="field"><span>{icon}</span><div><small>{label}</small>{children}</div></label>;
 }
 
-function RoutinesScreen({ addRoutine, tasks, onEdit }) {
+function RoutinesScreen({ addRoutine, addDayTemplate, tasks, onEdit }) {
+  const [templatesOpen, setTemplatesOpen] = useState(false);
   const ownTasks = tasks.slice().sort((a, b) => Number(a.active === false) - Number(b.active === false) || a.time.localeCompare(b.time));
+  const previewTemplates = ROUTINES.slice(0, 3);
   return <>
-    <section className="routineHero"><div><span>Programi</span><h1>{ROUTINES.length} rutina</h1><p>Osnovno, trening i obaveze u jednom tapu.</p></div><img src={LOGO} alt="Rutinko" /></section>
-    <section className="routineList">{ROUTINES.map((routine, index) => <article className="routineCard" key={`${routine.title}-${index}`}><TaskGlyph task={routine} className="routineIcon" /><div><h3>{routine.title}</h3><p>{routineMetaLine(routine)}</p></div><button onClick={() => addRoutine(routine)}>Dodaj</button></article>)}</section>
+    <section className="routineHero"><div><span>Rutine</span><h1>Predložak dana</h1><p>Jedan tap za osnovni dan, bez ručnog slaganja svake rutine.</p></div><img src={LOGO} alt="Rutinko" /></section>
+    <section className="dayTemplateCard">
+      <div className="templatePreviewIcons" aria-hidden="true">{previewTemplates.map((routine) => <span key={`template-${routine.title}`}>{routine.icon}</span>)}</div>
+      <div><h2>Dodaj predložak dana</h2><p>Zubi, tuš, doručak, voda, tablete, trening, šetnja i obroci.</p></div>
+      <button onClick={addDayTemplate}>Dodaj</button>
+    </section>
+    <section className={`templateDrawer ${templatesOpen ? 'open' : 'collapsed'}`}>
+      <button className="templateDrawerHeader" onClick={() => setTemplatesOpen((current) => !current)} aria-expanded={templatesOpen}>
+        <span className="templatePreviewIcons small" aria-hidden="true">{previewTemplates.map((routine) => <span key={`drawer-${routine.title}`}>{routine.icon}</span>)}</span>
+        <span><strong>Predlošci rutina</strong><small>{ROUTINES.length} prijedloga</small></span>
+        <ChevronDown className="sectionChevron" size={20} />
+      </button>
+      {templatesOpen && <div className="routineList templateList">{ROUTINES.map((routine, index) => <article className="routineCard" key={`${routine.title}-${index}`}><TaskGlyph task={routine} className="routineIcon" /><div><h3>{routine.title}</h3><p>{routineMetaLine(routine)}</p></div><button onClick={() => addRoutine(routine)}>Dodaj</button></article>)}</div>}
+    </section>
     <section className="taskSection routineManager"><div className="sectionHeader"><h2>Moje rutine</h2><small>{ownTasks.length} rutina</small></div><div className="routineList">{ownTasks.map((task) => <article className={`routineCard ${task.active === false ? 'paused' : ''}`} key={task.id}><TaskGlyph task={task} className="routineIcon" /><div><h3>{task.title}</h3><p>{routineMetaLine(task)} · {task.active === false ? 'pauzirana' : 'aktivna'}</p></div><button onClick={() => onEdit(task)}>Uredi</button></article>)}</div></section>
   </>;
 }
