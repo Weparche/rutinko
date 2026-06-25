@@ -48,24 +48,42 @@
 }
 
 .taskMeta p.taskDueInline {
-  max-width: 178px !important;
+  max-width: min(245px, 100%) !important;
   display: flex !important;
-  flex-direction: column !important;
-  gap: 3px !important;
-  white-space: normal !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
-  line-height: 1 !important;
+  flex-direction: row !important;
+  align-items: baseline !important;
+  gap: 6px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.05 !important;
+  font-size: 16px !important;
+  font-weight: 950 !important;
+  letter-spacing: -.035em !important;
+}
+
+.taskMeta p.taskDueInline .dueTimeLine,
+.taskMeta p.taskDueInline .dueRemainingLine {
+  display: inline !important;
+  font-size: 16px !important;
+  line-height: 1.05 !important;
+  font-weight: 950 !important;
+  letter-spacing: -.035em !important;
 }
 
 .taskMeta p.taskDueInline .dueTimeLine {
-  font-size: 12px;
   color: var(--ink);
 }
 
 .taskMeta p.taskDueInline .dueRemainingLine {
-  font-size: 11px;
   color: var(--blue);
+}
+
+.taskMeta p.taskDueInline .dueTimeLine::after {
+  content: "·";
+  margin-left: 6px;
+  color: var(--muted);
+  font-weight: 900;
 }
 
 .taskCard.done .taskMeta p.taskDueInline .dueRemainingLine {
@@ -93,10 +111,17 @@
   }
 
   .taskMeta {
-    padding-right: 72px !important;
+    padding-right: 70px !important;
   }
 
   .taskMeta p.taskDueInline {
-    max-width: 168px !important;
+    max-width: min(205px, 100%) !important;
+    font-size: 15px !important;
+    gap: 5px !important;
+  }
+
+  .taskMeta p.taskDueInline .dueTimeLine,
+  .taskMeta p.taskDueInline .dueRemainingLine {
+    font-size: 15px !important;
   }
 }
