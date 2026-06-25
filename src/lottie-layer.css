@@ -15,7 +15,40 @@
 
 .focusDogAnimation,
 .taskDogAnimation {
+  position: absolute;
+  z-index: 1;
+  width: 58px !important;
+  height: 58px !important;
+  max-width: 58px !important;
+  max-height: 58px !important;
+  overflow: hidden !important;
+  border-radius: 18px;
+  opacity: .78;
+  pointer-events: none;
   transition: opacity .2s ease, transform .2s ease;
+}
+
+.focusDogAnimation {
+  right: 16px;
+  bottom: 82px;
+}
+
+.taskDogAnimation {
+  right: 44px;
+  bottom: 10px;
+}
+
+.focusDogAnimation svg,
+.focusDogAnimation canvas,
+.focusDogAnimation > div,
+.taskDogAnimation svg,
+.taskDogAnimation canvas,
+.taskDogAnimation > div {
+  width: 58px !important;
+  height: 58px !important;
+  max-width: 58px !important;
+  max-height: 58px !important;
+  display: block !important;
 }
 
 .taskCard:hover .taskDogAnimation,
@@ -30,4 +63,30 @@
 
 .allDoneCard {
   grid-template-columns: 54px minmax(0, 1fr) 74px;
+}
+
+@media (max-width: 430px) {
+  .focusDogAnimation,
+  .taskDogAnimation,
+  .focusDogAnimation svg,
+  .focusDogAnimation canvas,
+  .focusDogAnimation > div,
+  .taskDogAnimation svg,
+  .taskDogAnimation canvas,
+  .taskDogAnimation > div {
+    width: 44px !important;
+    height: 44px !important;
+    max-width: 44px !important;
+    max-height: 44px !important;
+  }
+
+  .focusDogAnimation {
+    right: 14px;
+    bottom: 86px;
+  }
+
+  .taskDogAnimation {
+    right: 48px;
+    bottom: 12px;
+  }
 }
