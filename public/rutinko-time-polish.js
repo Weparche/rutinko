@@ -21,7 +21,7 @@
     if (hours > 0) parts.push(`${hours} h`);
     if (restMinutes > 0 || hours === 0) parts.push(`${restMinutes} min`);
 
-    return `${prefix} ${parts.join(' i ')}`;
+    return `${prefix} ${parts.join(' <span class="dueGlue">i</span> ')}`;
   }
 
   function dueHtml(time, fallback = '') {
@@ -39,11 +39,26 @@
     node.classList.add('dueMetaFormatted');
   }
 
+  function textFromHtml(node) {
+    return node?.textContent || '';
+  }
+
   function timeFromNode(node) {
     const stored = node?.dataset?.dueTime;
     if (stored) return stored;
-    const text = node?.textContent || '';
+    const text = textFromHtml(node);
     return text.match(TIME_RE)?.[1] || null;
+  }
+
+  function statusFromText(text) {
+    const parts = text.split('·').map((part) => part.trim()).filter(Boolean);
+    return parts.length > 1 ? parts[parts.length - 1] : '';
+  }
+
+  function renameDoneSection() {
+    document.querySelectorAll('.sectionTitle h2').forEach((title) => {
+      if (title.textContent.trim() === 'Gotovo') title.textContent = 'Završeno';
+    });
   }
 
   function polishFocus() {
@@ -57,33 +72,28 @@
   function polishTaskCards() {
     document.querySelectorAll('.taskCard').forEach((card) => {
       const textNode = card.querySelector('.taskMeta p');
-      const text = textNode?.textContent || '';
-      const time = card.dataset.dueTime || text.match(TIME_RE)?.[1];
-      if (!time) return;
+      const originalText = textNode?.dataset?.originalMeta || textFromHtml(textNode);
+      const time = card.dataset.dueTime || originalText.match(TIME_RE)?.[1] || textFromHtml(textNode).match(TIME_RE)?.[1];
+      if (!time || !textNode) return;
 
       card.dataset.dueTime = time;
-
-      let meta = card.querySelector('.taskDueMeta');
-      if (!meta) {
-        meta = document.createElement('div');
-        meta.className = 'taskDueMeta dueMetaFormatted';
-        card.appendChild(meta);
-      }
+      textNode.dataset.originalMeta = originalText;
+      card.querySelector('.taskDueMeta')?.remove();
 
       const resolved = card.classList.contains('done') || card.classList.contains('skipped');
-      const fallback = resolved ? (text.split('·').pop() || '').trim() : '';
-      updateDueNode(meta, time, fallback);
-
-      if (textNode && !textNode.classList.contains('taskStatusOnly')) {
-        const status = (text.split('·').pop() || '').trim();
-        if (status && !TIME_RE.test(status)) textNode.textContent = status;
-        textNode.classList.add('taskStatusOnly');
-      }
+      const fallback = resolved ? statusFromText(originalText) : '';
+      const html = dueHtml(time, fallback);
+      if (textNode.dataset.dueRendered === html) return;
+      textNode.dataset.dueRendered = html;
+      textNode.innerHTML = html;
+      textNode.classList.remove('taskStatusOnly');
+      textNode.classList.add('taskDueInline');
     });
   }
 
   function run() {
     queued = false;
+    renameDoneSection();
     polishFocus();
     polishTaskCards();
   }
