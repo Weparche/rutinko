@@ -47,9 +47,11 @@
   color: var(--ink) !important;
   font-size: 10px !important;
   line-height: 1 !important;
-  font-weight: 950 !important;
+  font-weight: 1000 !important;
   letter-spacing: .105em !important;
   text-transform: uppercase !important;
+  text-shadow: 0 0 .01px var(--ink), 0 0 .01px var(--ink) !important;
+  -webkit-font-smoothing: antialiased;
   box-shadow: 0 10px 20px rgba(183,255,56,.28), inset 0 0 0 1px rgba(7,24,47,.08) !important;
   white-space: nowrap;
 }
@@ -297,6 +299,7 @@
     min-height: 32px !important;
     padding-inline: 12px !important;
     font-size: 9px !important;
+    font-weight: 1000 !important;
   }
 
   .focusHeader small {
