@@ -1,7 +1,9 @@
 /* Final Impeccable polish overrides. Loaded from /public so it is easy to inspect and rollback. */
 
 .focusCard {
+  position: relative !important;
   overflow: hidden !important;
+  padding-top: 74px !important;
   border: 1px solid rgba(18,104,255,.22) !important;
   background:
     radial-gradient(circle at 8% 0%, rgba(183,255,56,.20), transparent 8rem),
@@ -21,29 +23,60 @@
 }
 
 .focusHeader {
-  min-height: 36px !important;
-  margin: 0 74px 14px 76px !important;
-  align-items: center !important;
+  position: absolute !important;
+  top: 12px !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 3;
+  min-height: 34px !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  pointer-events: none;
 }
 
 .focusLabel {
-  min-height: 32px !important;
-  padding: 0 12px !important;
-  background: #07182f !important;
-  color: #fff !important;
-  letter-spacing: .07em !important;
-  box-shadow: 0 10px 20px rgba(7,24,47,.13) !important;
+  min-height: 34px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 14px !important;
+  border-radius: 999px !important;
+  background: var(--lime) !important;
+  color: var(--ink) !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+  letter-spacing: .105em !important;
+  text-transform: uppercase !important;
+  box-shadow: 0 10px 20px rgba(183,255,56,.28), inset 0 0 0 1px rgba(7,24,47,.08) !important;
+  white-space: nowrap;
 }
 
 .focusHeader small {
-  padding: 7px 9px;
+  position: absolute;
+  top: 38px;
+  right: 12px;
+  max-width: 142px;
+  min-height: 24px;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 8px;
   border-radius: 999px;
   background: rgba(18,104,255,.08);
   color: var(--blue) !important;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 900;
+  text-align: right;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 .focusBody {
-  padding: 6px 70px 0 0 !important;
+  padding: 0 70px 0 0 !important;
 }
 
 .focusIcon {
@@ -189,21 +222,37 @@
   min-height: 58px !important;
 }
 
+.setting {
+  overflow: hidden;
+}
+
+.setting > div:first-child {
+  min-width: 0;
+}
+
 .numberWithUnit {
-  width: 132px;
+  width: min(132px, 100%);
+  min-height: 42px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  padding: 0 10px;
+  border-radius: 16px;
+  background: #f4f8ff;
+  box-shadow: inset 0 0 0 1px #dce9ff;
 }
 
 .numberWithUnit input {
-  min-height: 42px;
-  border-radius: 16px;
-  padding: 0 12px;
-  background: #f4f8ff;
-  box-shadow: inset 0 0 0 1px #dce9ff;
-  text-align: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: right;
   font-weight: 950;
 }
 
@@ -215,7 +264,8 @@
 }
 
 .timeSelect24 {
-  width: 132px;
+  width: min(132px, 100%);
+  max-width: 100%;
   min-height: 42px;
   border: 0;
   border-radius: 16px;
@@ -233,13 +283,28 @@
 }
 
 @media (max-width: 430px) {
+  .focusCard {
+    padding-top: 78px !important;
+  }
+
   .focusHeader {
-    margin-left: 76px !important;
-    margin-right: 64px !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+  }
+
+  .focusLabel {
+    min-height: 32px !important;
+    padding-inline: 12px !important;
+    font-size: 9px !important;
   }
 
   .focusHeader small {
-    display: none;
+    display: inline-flex !important;
+    top: 38px;
+    right: 10px;
+    max-width: 138px;
+    font-size: 9.5px;
   }
 
   .dayTemplateCard {
