@@ -37,6 +37,29 @@
     }
   }
 
+  function writeState(state) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function restoreTask(taskId) {
+    if (!taskId) return;
+    const state = readState();
+    const task = Array.isArray(state.tasks) ? state.tasks.find((item) => item.id === taskId) : null;
+    const occ = occurrenceId(task || { id: taskId }, dateKey());
+    const done = { ...(state.done || {}) };
+    const skipped = { ...(state.skipped || {}) };
+    const snoozedUntil = { ...(state.snoozedUntil || {}) };
+    const lastNotified = { ...(state.lastNotified || {}) };
+
+    delete done[occ];
+    delete skipped[occ];
+    delete snoozedUntil[occ];
+    delete lastNotified[occ];
+
+    writeState({ ...state, done, skipped, snoozedUntil, lastNotified });
+    window.setTimeout(() => window.location.reload(), 40);
+  }
+
   function minutesUntil(time) {
     const [hour, minute] = time.split(':').map(Number);
     const target = new Date();
@@ -62,6 +85,15 @@
   function dueHtml(time, fallback = '') {
     const remaining = fallback || durationLabel(minutesUntil(time));
     return `<span class="dueTimeLine">${time} h</span><span class="dueRemainingLine">${remaining}</span>`;
+  }
+
+  function escapeHtml(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 
   function updateDueNode(node, time, fallback = '') {
@@ -116,15 +148,20 @@
   }
 
   function completedCardHtml(task) {
-    const icon = task.icon || '✅';
-    const title = task.title || 'Rutina';
-    const time = task.time || '00:00';
+    const icon = escapeHtml(task.icon || '✅');
+    const title = escapeHtml(task.title || 'Rutina');
+    const time = escapeHtml(task.time || '00:00');
     const tone = task.resolvedTone || 'done';
+    const label = escapeHtml(task.resolvedLabel || 'završeno');
+    const id = escapeHtml(task.id);
     return `
-      <article class="taskCard ${tone} completedMirrorCard" data-due-time="${time}">
+      <article class="taskCard ${tone} completedMirrorCard" data-due-time="${time}" data-task-id="${id}">
         <div class="taskMeta">
           <div class="taskIcon">${icon}</div>
-          <div><h3>${title}</h3><p class="taskDueInline" data-original-meta="${time} h · ${task.resolvedLabel}">${dueHtml(time, task.resolvedLabel)}</p></div>
+          <div><h3>${title}</h3><p class="taskDueInline" data-original-meta="${time} h · ${label}">${dueHtml(time, label)}</p></div>
+        </div>
+        <div class="quickActions completedMirrorActions">
+          <button class="success restoreCompletedTask" type="button" data-task-id="${id}">↩<small>Vrati</small></button>
         </div>
       </article>
     `;
@@ -151,13 +188,13 @@
     let section = document.querySelector('.completedPlaceholderSection');
     if (!section) {
       section = document.createElement('section');
-      section.className = 'taskSection sectionPanel done completedPlaceholderSection';
+      section.className = 'taskSection sectionPanel done completedPlaceholderSection collapsed';
+      section.dataset.userOpened = 'false';
       anchor.insertAdjacentElement(eveningSection ? 'afterend' : 'afterend', section);
     }
 
     const count = completed.length;
-    const wasCount = Number(section.dataset.completedCount || 0);
-    const shouldOpen = count > 0 || section.classList.contains('open');
+    const shouldOpen = section.dataset.userOpened === 'true';
     section.dataset.completedCount = String(count);
     section.classList.toggle('open', shouldOpen);
     section.classList.toggle('collapsed', !shouldOpen);
@@ -170,13 +207,16 @@
       ${shouldOpen ? (count ? `<div class="taskStack completedMirrorStack">${completed.map(completedCardHtml).join('')}</div>` : '<div class="completedEmptyText">Još nema završenih rutina danas.</div>') : ''}
     `;
 
-    section.querySelector('button')?.addEventListener('click', () => {
-      section.classList.toggle('open');
-      section.classList.toggle('collapsed');
+    section.querySelector('.sectionToggle')?.addEventListener('click', () => {
+      section.dataset.userOpened = section.dataset.userOpened === 'true' ? 'false' : 'true';
       scheduleRun(0);
     });
-
-    if (count !== wasCount) section.classList.add('justSynced');
+    section.querySelectorAll('.restoreCompletedTask').forEach((button) => {
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        restoreTask(button.dataset.taskId);
+      });
+    });
   }
 
   function polishFocus() {
