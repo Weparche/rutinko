@@ -1,24 +1,39 @@
+.focusCard {
+  overflow: hidden !important;
+}
+
+.focusCard .focusHeader {
+  overflow: visible !important;
+  pointer-events: none !important;
+}
+
 .focusCard .focusHeader small.dueMetaFormatted {
   position: absolute !important;
   top: 46px !important;
-  right: 12px !important;
+  left: auto !important;
+  right: 10px !important;
+  bottom: auto !important;
   transform: none !important;
-  max-width: 154px !important;
-  min-height: 40px !important;
+  width: max-content !important;
+  max-width: 148px !important;
+  min-height: 38px !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: flex-end !important;
   justify-content: center !important;
   gap: 2px !important;
-  padding: 6px 9px !important;
+  padding: 6px 8px !important;
   background: rgba(18,104,255,.08) !important;
   text-align: right !important;
   white-space: nowrap !important;
   pointer-events: none !important;
 }
 
-.focusCard .focusHeader {
-  overflow: visible !important;
+.taskMeta h3 {
+  font-size: 19px !important;
+  line-height: 1.02 !important;
+  font-weight: 1000 !important;
+  letter-spacing: -.055em !important;
 }
 
 .dueTimeLine {
@@ -109,8 +124,8 @@
   .focusCard .focusHeader small.dueMetaFormatted {
     display: flex !important;
     top: 46px !important;
-    right: 10px !important;
-    max-width: 142px !important;
+    right: 8px !important;
+    max-width: 138px !important;
   }
 
   .taskCard {
@@ -119,6 +134,10 @@
 
   .taskMeta {
     padding-right: 70px !important;
+  }
+
+  .taskMeta h3 {
+    font-size: 18px !important;
   }
 
   .taskMeta p.taskDueInline {
