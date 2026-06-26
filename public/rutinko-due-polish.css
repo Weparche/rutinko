@@ -1,7 +1,7 @@
 .focusCard .focusHeader small.dueMetaFormatted {
-  position: fixed !important;
-  top: auto !important;
-  right: max(20px, calc((100vw - min(100vw, 520px)) / 2 + 20px)) !important;
+  position: absolute !important;
+  top: 46px !important;
+  right: 12px !important;
   transform: none !important;
   max-width: 154px !important;
   min-height: 40px !important;
@@ -14,6 +14,7 @@
   background: rgba(18,104,255,.08) !important;
   text-align: right !important;
   white-space: nowrap !important;
+  pointer-events: none !important;
 }
 
 .focusCard .focusHeader {
@@ -107,7 +108,8 @@
 @media (max-width: 430px) {
   .focusCard .focusHeader small.dueMetaFormatted {
     display: flex !important;
-    right: 20px !important;
+    top: 46px !important;
+    right: 10px !important;
     max-width: 142px !important;
   }
 
