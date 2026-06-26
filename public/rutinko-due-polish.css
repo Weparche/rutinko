@@ -1,7 +1,9 @@
-.focusHeader small.dueMetaFormatted {
-  top: 38px !important;
-  right: 12px !important;
-  max-width: 150px !important;
+.focusCard .focusHeader small.dueMetaFormatted {
+  position: fixed !important;
+  top: auto !important;
+  right: max(20px, calc((100vw - min(100vw, 520px)) / 2 + 20px)) !important;
+  transform: none !important;
+  max-width: 154px !important;
   min-height: 40px !important;
   display: flex !important;
   flex-direction: column !important;
@@ -12,6 +14,10 @@
   background: rgba(18,104,255,.08) !important;
   text-align: right !important;
   white-space: nowrap !important;
+}
+
+.focusCard .focusHeader {
+  overflow: visible !important;
 }
 
 .dueTimeLine {
@@ -99,10 +105,9 @@
 }
 
 @media (max-width: 430px) {
-  .focusHeader small.dueMetaFormatted {
+  .focusCard .focusHeader small.dueMetaFormatted {
     display: flex !important;
-    top: 38px !important;
-    right: 10px !important;
+    right: 20px !important;
     max-width: 142px !important;
   }
 
