@@ -62,9 +62,12 @@
   }
 
   function polishFocus() {
-    document.querySelectorAll('.focusHeader small').forEach((node) => {
+    document.querySelectorAll('.focusCard').forEach((card) => {
+      const node = card.querySelector('.focusDueMeta') || card.querySelector('.focusHeader small');
       const time = timeFromNode(node);
-      if (!time) return;
+      if (!time || !node) return;
+      node.classList.add('focusDueMeta');
+      if (node.parentElement !== card) card.appendChild(node);
       updateDueNode(node, time);
     });
   }
