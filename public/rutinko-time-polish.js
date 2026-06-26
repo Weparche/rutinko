@@ -61,6 +61,44 @@
     });
   }
 
+  function ensureCompletedSection() {
+    const existing = Array.from(document.querySelectorAll('.sectionTitle h2')).some((title) => {
+      const text = title.textContent.trim();
+      return text === 'Završeno' || text === 'Gotovo';
+    });
+    if (existing || document.querySelector('.completedPlaceholderSection')) return;
+
+    const eveningTitle = Array.from(document.querySelectorAll('.sectionTitle h2')).find((title) => title.textContent.trim() === 'Večer');
+    const eveningSection = eveningTitle?.closest('.taskSection');
+    const anchor = eveningSection || document.querySelector('.actionDock');
+    if (!anchor?.parentNode) return;
+
+    const section = document.createElement('section');
+    section.className = 'taskSection sectionPanel collapsed done completedPlaceholderSection';
+    section.innerHTML = `
+      <button class="sectionHeader sectionToggle" type="button" aria-expanded="false">
+        <span class="sectionTitle"><span class="sectionIcon">✅</span><h2>Završeno</h2></span>
+        <span class="sectionMeta"><small>0 završeno</small><svg class="sectionChevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+      </button>
+    `;
+    section.querySelector('button')?.addEventListener('click', () => {
+      section.classList.toggle('open');
+      section.classList.toggle('collapsed');
+      const open = section.classList.contains('open');
+      section.querySelector('button')?.setAttribute('aria-expanded', String(open));
+      let empty = section.querySelector('.completedEmptyText');
+      if (open && !empty) {
+        empty = document.createElement('div');
+        empty.className = 'completedEmptyText';
+        empty.textContent = 'Još nema završenih rutina danas.';
+        section.appendChild(empty);
+      }
+      if (!open) empty?.remove();
+    });
+
+    anchor.insertAdjacentElement(eveningSection ? 'afterend' : 'afterend', section);
+  }
+
   function polishFocus() {
     document.querySelectorAll('.focusCard').forEach((card) => {
       const node = card.querySelector('.focusDueMeta') || card.querySelector('.focusHeader small');
@@ -97,6 +135,7 @@
   function run() {
     queued = false;
     renameDoneSection();
+    ensureCompletedSection();
     polishFocus();
     polishTaskCards();
   }
