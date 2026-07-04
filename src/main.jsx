@@ -50,6 +50,63 @@ function messageSw(payload) {
   navigator.serviceWorker.ready.then((registration) => registration.active?.postMessage(payload)).catch(() => {});
 }
 
+// Push server (Cloudflare Worker) — šalje podsjetnike i kad je browser ugašen.
+const PUSH_SERVER = 'https://rutinko-push.ig29007.workers.dev';
+
+function base64UrlToUint8Array(value) {
+  const padded = value + '='.repeat((4 - (value.length % 4)) % 4);
+  const raw = atob(padded.replace(/-/g, '+').replace(/_/g, '/'));
+  return Uint8Array.from(raw, (char) => char.charCodeAt(0));
+}
+
+function deviceTimezone() {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Zagreb';
+  } catch {
+    return 'Europe/Zagreb';
+  }
+}
+
+async function ensurePushSubscription() {
+  if (!PUSH_SERVER.startsWith('https://')) return null;
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return null;
+  if (Notification.permission !== 'granted') return null;
+  const registration = await navigator.serviceWorker.ready;
+  let subscription = await registration.pushManager.getSubscription();
+  if (!subscription) {
+    const response = await fetch(`${PUSH_SERVER}/api/vapid-public-key`);
+    const { key } = await response.json();
+    subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: base64UrlToUint8Array(key)
+    });
+    messageSw({ type: 'push-config', config: { server: PUSH_SERVER, publicKey: key, tz: deviceTimezone() } });
+  }
+  return subscription;
+}
+
+async function syncPushState(state) {
+  try {
+    const subscription = await ensurePushSubscription();
+    if (!subscription) return;
+    await fetch(`${PUSH_SERVER}/api/sync`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        subscription: subscription.toJSON(),
+        tz: deviceTimezone(),
+        state: {
+          tasks: state.tasks,
+          done: state.done,
+          skipped: state.skipped,
+          snoozedUntil: state.snoozedUntil,
+          settings: state.settings
+        }
+      })
+    });
+  } catch {}
+}
+
 function formatRangeLabel(start, end) {
   return `${start}–${end} h`;
 }
@@ -158,6 +215,11 @@ function App() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     messageSw({ type: 'sync-state', state });
+  }, [state]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => { syncPushState(state); }, 2000);
+    return () => clearTimeout(timer);
   }, [state]);
 
   useEffect(() => {
@@ -386,6 +448,7 @@ function App() {
     if (!('Notification' in window)) return showToast('Ovaj browser ne podržava notifikacije.');
     setState((previous) => ({ ...previous, settings: { ...previous.settings, remindersEnabled: true } }));
     const permission = await Notification.requestPermission();
+    if (permission === 'granted') syncPushState(state);
     showToast(permission === 'granted' ? 'Podsjetnici su uključeni.' : 'Podsjetnici nisu odobreni.');
   }
 

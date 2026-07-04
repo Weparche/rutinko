@@ -120,6 +120,34 @@ function reminderTitle(count) {
   return `⏰ ${count} ${verb}`;
 }
 
+function showReminderNotification(due, snoozeMinutes) {
+  if (due.length === 1) {
+    const item = due[0];
+    return self.registration.showNotification(`${item.icon} ${item.title}`, {
+      body: 'Označi kao završeno, odgodi ili preskoči u aplikaciji.',
+      tag: REMINDER_TAG,
+      renotify: true,
+      icon: LOGO,
+      badge: LOGO,
+      data: { occurrenceId: item.occ },
+      actions: [
+        { action: 'done', title: 'Završeno' },
+        { action: 'snooze30', title: `Odgodi ${snoozeMinutes || 30} min` }
+      ]
+    });
+  }
+
+  return self.registration.showNotification(reminderTitle(due.length), {
+    body: due.map((item) => `${item.icon} ${item.title} · ${item.time}`).join('\n'),
+    tag: REMINDER_TAG,
+    renotify: true,
+    icon: LOGO,
+    badge: LOGO,
+    data: { occurrenceIds: due.map((item) => item.occ) },
+    actions: [{ action: 'open', title: 'Otvori Rutinko' }]
+  });
+}
+
 async function checkDueReminders() {
   if (typeof Notification !== 'undefined' && Notification.permission !== 'granted') return;
   const state = await kvGet('state').catch(() => null);
@@ -140,38 +168,13 @@ async function checkDueReminders() {
     if (snoozeUntil && now < snoozeUntil) continue;
     const last = Math.max(Number(notified[occ] || 0), Number((state.lastNotified || {})[occ] || 0));
     if (last && now - last < interval) continue;
-    due.push({ task, occ });
+    due.push({ occ, icon: task.icon || '⏰', title: task.title || 'Rutina', time: task.time });
   }
 
   if (!due.length) return;
   due.forEach(({ occ }) => { notified[occ] = now; });
   await kvSet('lastNotified', notified);
-
-  if (due.length === 1) {
-    const { task, occ } = due[0];
-    return self.registration.showNotification(`${task.icon} ${task.title}`, {
-      body: 'Označi kao završeno, odgodi ili preskoči u aplikaciji.',
-      tag: REMINDER_TAG,
-      renotify: true,
-      icon: LOGO,
-      badge: LOGO,
-      data: { occurrenceId: occ },
-      actions: [
-        { action: 'done', title: 'Završeno' },
-        { action: 'snooze30', title: `Odgodi ${state.settings.snoozeMinutes || 30} min` }
-      ]
-    });
-  }
-
-  return self.registration.showNotification(reminderTitle(due.length), {
-    body: due.map(({ task }) => `${task.icon} ${task.title} · ${task.time}`).join('\n'),
-    tag: REMINDER_TAG,
-    renotify: true,
-    icon: LOGO,
-    badge: LOGO,
-    data: { occurrenceIds: due.map(({ occ }) => occ) },
-    actions: [{ action: 'open', title: 'Otvori Rutinko' }]
-  });
+  return showReminderNotification(due, state.settings.snoozeMinutes);
 }
 
 // Akcija iz notifikacije kad nijedan prozor nije otvoren: primijeni na SW kopiju
@@ -227,6 +230,10 @@ self.addEventListener('message', (event) => {
     event.waitUntil(kvSet('state', data.state).then(() => checkDueReminders()));
     return;
   }
+  if (data.type === 'push-config') {
+    event.waitUntil(kvSet('pushConfig', data.config));
+    return;
+  }
   if (data.type === 'check-reminders') {
     event.waitUntil(checkDueReminders());
     return;
@@ -246,4 +253,49 @@ self.addEventListener('message', (event) => {
 // Budi SW i kad nijedan tab nije otvoren (instalirana PWA, Chromium).
 self.addEventListener('periodicsync', (event) => {
   if (event.tag === REMINDER_TAG) event.waitUntil(checkDueReminders());
+});
+
+// Web Push sa servera — radi i kad je browser potpuno ugašen (Android/iOS).
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {}
+  const due = Array.isArray(data.due) ? data.due : [];
+  if (!due.length) return;
+  event.waitUntil(showReminderNotification(due, Number(data.snoozeMinutes) || 30));
+});
+
+function base64UrlToUint8Array(value) {
+  const padded = value + '='.repeat((4 - (value.length % 4)) % 4);
+  const raw = atob(padded.replace(/-/g, '+').replace(/_/g, '/'));
+  return Uint8Array.from(raw, (char) => char.charCodeAt(0));
+}
+
+// Browser može rotirati pretplatu — obnovi je i javi serveru bez otvaranja appa.
+self.addEventListener('pushsubscriptionchange', (event) => {
+  event.waitUntil((async () => {
+    const config = await kvGet('pushConfig').catch(() => null);
+    if (!config || !config.server || !config.publicKey) return;
+    const subscription = await self.registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: base64UrlToUint8Array(config.publicKey)
+    });
+    const state = await kvGet('state').catch(() => null);
+    await fetch(`${config.server}/api/sync`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        subscription: subscription.toJSON(),
+        tz: config.tz,
+        state: state ? {
+          tasks: state.tasks,
+          done: state.done,
+          skipped: state.skipped,
+          snoozedUntil: state.snoozedUntil,
+          settings: state.settings
+        } : null
+      })
+    });
+  })());
 });

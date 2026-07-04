@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "rutinko-push",
+  "main": "src/index.js",
+  "compatibility_date": "2026-07-04",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    "logs": { "head_sampling_rate": 1 }
+  },
+  "triggers": {
+    "crons": ["*/5 * * * *"]
+  },
+  "kv_namespaces": [
+    { "binding": "SUBS", "id": "0af38cc85cf244ff9aa5a59fc4e4f677" }
+  ],
+  "vars": {
+    "VAPID_SUBJECT": "mailto:ig29007@gmail.com",
+    "VAPID_PUBLIC_KEY": "BG0ZbHAhqRdrvS8-G_8fCBZgEg_gIghyF66SEEzfXbFptsaW69-CbNJ2bg-F5BXRpxUihFnbnrO4hQ-_QdHBQtY"
+  }
+}
