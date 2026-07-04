@@ -45,6 +45,11 @@ function formatTimeLabel(time) {
   return `${time} h`;
 }
 
+function messageSw(payload) {
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.ready.then((registration) => registration.active?.postMessage(payload)).catch(() => {});
+}
+
 function formatRangeLabel(start, end) {
   return `${start}–${end} h`;
 }
@@ -152,6 +157,7 @@ function App() {
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    messageSw({ type: 'sync-state', state });
   }, [state]);
 
   useEffect(() => {
@@ -189,14 +195,30 @@ function App() {
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return undefined;
     navigator.serviceWorker.register('/sw.js');
+    navigator.serviceWorker.ready.then(async (registration) => {
+      if ('periodicSync' in registration) {
+        try {
+          await registration.periodicSync.register('rutinko-reminders', { minInterval: 60 * 60 * 1000 });
+        } catch {}
+      }
+    }).catch(() => {});
+
+    const applyAction = (action, occurrenceId) => {
+      if (!occurrenceId) return;
+      const [id, key] = occurrenceId.split('::');
+      if (action === 'done') completeTask(id, key || dateKey());
+      if (action === 'snooze30') snoozeTask(id, state.settings.snoozeMinutes, key || dateKey());
+    };
     const handler = (event) => {
       const data = event.data || {};
-      if (!data.occurrenceId) return;
-      const id = data.occurrenceId.split('::')[0];
-      if (data.action === 'done') completeTask(id);
-      if (data.action === 'snooze30') snoozeTask(id, state.settings.snoozeMinutes);
+      if (data.type === 'pending-actions') {
+        (data.actions || []).forEach((item) => applyAction(item.action, item.occurrenceId));
+        return;
+      }
+      applyAction(data.action, data.occurrenceId);
     };
     navigator.serviceWorker.addEventListener('message', handler);
+    messageSw({ type: 'drain-pending' });
     return () => navigator.serviceWorker.removeEventListener('message', handler);
   }, [state.settings.snoozeMinutes]);
 
@@ -381,34 +403,46 @@ function App() {
   function runReminderCheck() {
     if (!state.settings.remindersEnabled) return;
     if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+    if ('serviceWorker' in navigator) {
+      messageSw({ type: 'check-reminders' });
+      return;
+    }
+
     if (isQuietTime(state.settings)) return;
-    todayTasks.forEach((task) => {
+    const due = todayTasks.filter((task) => {
       const occ = occurrenceId(task);
-      if (state.done[occ] || state.skipped[occ]) return;
-      if (Date.now() < dueTime(task).getTime()) return;
-      if (state.snoozedUntil[occ] && Date.now() < Number(state.snoozedUntil[occ])) return;
+      if (state.done[occ] || state.skipped[occ]) return false;
+      if (Date.now() < dueTime(task).getTime()) return false;
+      if (state.snoozedUntil[occ] && Date.now() < Number(state.snoozedUntil[occ])) return false;
       const last = Number(state.lastNotified[occ] || 0);
-      if (last && Date.now() - last < state.settings.reminderIntervalMinutes * 60000) return;
-      sendNotification(task, occ);
-      setState((previous) => ({ ...previous, lastNotified: { ...previous.lastNotified, [occ]: Date.now() } }));
+      return !(last && Date.now() - last < state.settings.reminderIntervalMinutes * 60000);
+    });
+    if (!due.length) return;
+    sendGroupedNotification(due);
+    setState((previous) => {
+      const lastNotified = { ...previous.lastNotified };
+      due.forEach((task) => { lastNotified[occurrenceId(task)] = Date.now(); });
+      return { ...previous, lastNotified };
     });
   }
 
-  async function sendNotification(task, occ) {
-    const options = {
-      body: 'Označi kao završeno, odgodi ili preskoči u aplikaciji.',
-      tag: occ,
-      renotify: true,
-      icon: LOGO,
-      badge: LOGO,
-      data: { occurrenceId: occ },
-      actions: [
-        { action: 'done', title: 'Završeno' },
-        { action: 'snooze30', title: `Odgodi ${state.settings.snoozeMinutes} min` }
-      ]
-    };
-    if ('serviceWorker' in navigator) (await navigator.serviceWorker.ready).showNotification(`${task.icon} ${task.title}`, options);
-    else new Notification(`${task.icon} ${task.title}`, options);
+  function sendGroupedNotification(due) {
+    const shared = { tag: 'rutinko-reminders', renotify: true, icon: LOGO, badge: LOGO };
+    if (due.length === 1) {
+      const task = due[0];
+      new Notification(`${task.icon} ${task.title}`, {
+        ...shared,
+        body: 'Označi kao završeno, odgodi ili preskoči u aplikaciji.',
+        data: { occurrenceId: occurrenceId(task) }
+      });
+      return;
+    }
+    const verb = due.length % 10 >= 2 && due.length % 10 <= 4 && (due.length % 100 < 12 || due.length % 100 > 14) ? 'rutine čekaju' : 'rutina čeka';
+    new Notification(`⏰ ${due.length} ${verb}`, {
+      ...shared,
+      body: due.map((task) => `${task.icon} ${task.title} · ${task.time}`).join('\n')
+    });
   }
 
   function getExerciseToday() {

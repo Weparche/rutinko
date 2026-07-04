@@ -1,0 +1,25 @@
+.brandLockup img.rutinkoCleanLogo,
+.routineHero img.rutinkoCleanLogo {
+  display: block !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  background: #ffffff !important;
+  padding: 4px !important;
+  border-radius: 17px !important;
+  image-rendering: auto !important;
+  transform: none !important;
+  clip-path: none !important;
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+
+.brandLockup img.rutinkoCleanLogo {
+  width: 48px !important;
+  height: 48px !important;
+}
+
+.routineHero img.rutinkoCleanLogo {
+  width: 76px !important;
+  height: 76px !important;
+  padding: 6px !important;
+}
