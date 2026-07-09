@@ -13,4 +13,4 @@ crons = ["*/5 * * * *"]
 
 [[kv_namespaces]]
 binding = "RUTINKO_PUSH_KV"
-id = "TODO"
+id = "0393976ea08147a08cdeecdae27d1738"

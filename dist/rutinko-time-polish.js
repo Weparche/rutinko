@@ -221,11 +221,16 @@
 
   function polishFocus() {
     document.querySelectorAll('.focusCard').forEach((card) => {
-      const node = card.querySelector('.focusDueMeta') || card.querySelector('.focusHeader small');
-      const time = timeFromNode(node);
-      if (!time || !node) return;
+      const node = card.querySelector('.focusHeader small');
+      const staleDetachedMeta = card.querySelector(':scope > .focusDueMeta');
+      if (staleDetachedMeta && staleDetachedMeta !== node) staleDetachedMeta.remove();
+      if (!node) return;
+
+      const currentText = textFromHtml(node);
+      const time = currentText.match(TIME_RE)?.[1] || null;
+      if (!time) return;
+
       node.classList.add('focusDueMeta');
-      if (node.parentElement !== card) card.appendChild(node);
       updateDueNode(node, time);
     });
   }
