@@ -7,6 +7,8 @@ workers_dev = true
 ALLOWED_ORIGIN = "*"
 PUSH_TTL_SECONDS = "1800"
 PUSH_URGENCY = "normal"
+VAPID_PUBLIC_KEY = "BIDkEP4o7yj5bqTPYOTEbgljyCx_9YuWfg3SSnGD7DQ3EQN_wtfi73RkiSJ4ByCB_dzo-n3wmQmftBWa1wZ_KyI"
+VAPID_SUBJECT = "mailto:ig29007@gmail.com"
 
 [triggers]
 crons = ["*/5 * * * *"]
