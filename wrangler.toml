@@ -8,6 +8,9 @@ ALLOWED_ORIGIN = "*"
 PUSH_TTL_SECONDS = "1800"
 PUSH_URGENCY = "normal"
 
+[triggers]
+crons = ["*/5 * * * *"]
+
 [[kv_namespaces]]
 binding = "RUTINKO_PUSH_KV"
 id = "TODO"
