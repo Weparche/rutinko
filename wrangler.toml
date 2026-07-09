@@ -1,0 +1,16 @@
+name = "rutinko-push"
+main = "worker/src/index.js"
+compatibility_date = "2026-07-06"
+workers_dev = true
+
+[vars]
+ALLOWED_ORIGIN = "*"
+PUSH_TTL_SECONDS = "1800"
+PUSH_URGENCY = "normal"
+
+[triggers]
+crons = ["*/5 * * * *"]
+
+[[kv_namespaces]]
+binding = "RUTINKO_PUSH_KV"
+id = "TODO"
